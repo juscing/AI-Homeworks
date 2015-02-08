@@ -16,6 +16,29 @@ public class Shell {
 			switch(command[0].toUpperCase()){
 			case "TEACH":
 				
+				if(command[1].contains("=")) {
+					//fact
+					String[] parts = command[1].split("=");
+					String var = parts[0];
+					var.trim();
+					String state = parts[1];
+					state.trim();
+					if(state.contains("\""))
+						Teach.teach_string(var, state);
+					else{
+						if(state.equals("false"))
+							Teach.teach_bool(var, false);
+						else
+							Teach.teach_bool(var, true);
+					}
+				} else {
+					//rule
+					//can be complex, just pass the whole thing
+					Teach.teach_exp(command[1]);
+				}
+				
+				
+				
 				break;
 			case "LIST":
 				
