@@ -12,7 +12,9 @@ public class Shell {
 	
 	public void run() {
 		while(!end) {
-			String[] command = getNextCommand();
+			//String[] command = getNextCommand();
+			ExpressionParser.evaluate(input.nextLine());
+			/*
 			switch(command[0].toUpperCase()){
 			case "TEACH":
 				
@@ -54,7 +56,7 @@ public class Shell {
 			default:
 				System.out.println("Unsupported Command");
 			}
-				
+			*/
 		}
 	}
 	
