@@ -10,13 +10,25 @@ public class Facts {
 		bool = c;
 	}
 	
+	public void setState(String state) {
+		this.state = state;
+	}
+	
+	public void setVal(boolean val) {
+		this.bool = val;
+	}
+	
 	public String getVar() {
 		return var;
+	}
+	
+	public boolean getVal() {
+		return this.bool;
 	}
 
 	public String getString() {
 		return state;
 	}
-
+	
 
 }

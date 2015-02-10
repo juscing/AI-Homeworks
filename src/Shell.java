@@ -20,9 +20,11 @@ public class Shell {
 					//fact
 					String[] parts = command[1].split("=");
 					String var = parts[0];
-					var.trim();
+					// because java strings
+					var = var.trim();
 					String state = parts[1];
-					state.trim();
+					// because java strings
+					state = state.trim();
 					if(state.contains("\""))
 						Teach.teach_string(var, state);
 					else{
@@ -33,15 +35,12 @@ public class Shell {
 					}
 				} else {
 					//rule
-					//can be complex, just pass the whole thing
-					Teach.teach_exp(command[1]);
+					String[] express = command[1].split("->");
+					Teach.teach_exp(express[0], express[1]);
 				}
-				
-				
-				
 				break;
 			case "LIST":
-				
+				List.list();
 				break;
 			case "LEARN":
 			

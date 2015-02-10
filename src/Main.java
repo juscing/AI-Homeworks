@@ -1,14 +1,12 @@
-import java.util.Arrays;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class Main {
 
-	ArrayList<Facts> facts_known = new ArrayList<Facts>();
-	ArrayList<Facts> facts_inferred = new ArrayList<Facts>();
-	ArrayList<Facts> rules = new ArrayList<Facts>();
+	static LinkedHashMap<String,Facts> facts_known = new LinkedHashMap<String, Facts>();
+	static LinkedHashMap<String,Facts> facts_inferred = new LinkedHashMap<String, Facts>();
+	static LinkedHashMap<String,Facts> rules = new LinkedHashMap<String, Facts>();
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Shell shell = new Shell();
 		shell.run();
 	}
