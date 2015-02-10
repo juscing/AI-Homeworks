@@ -61,11 +61,13 @@ public class ExpressionParser {
 					}
 				}
 			} else {
+				System.out.println("No !");
 				if(entry.contains("|")){
 					if(!orProcess(entry)) {
 						return false;
 					}
 				} else if(!Main.facts_known.contains(entry)){
+					System.out.println("didn't find " + entry);
 					return false;
 				}
 			}
