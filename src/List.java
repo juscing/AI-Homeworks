@@ -17,6 +17,10 @@ public class List {
 		}
 		s.append("\n");
 		s.append("Rules:\n");
+		for(String key: Main.rules.keySet()) {
+			Facts f = Main.rules.get(key);			
+			s.append("\t" + f.getString() + " -> " + key +"\n");
+		}
 		System.out.println(s.toString());
 	}
 	

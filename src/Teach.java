@@ -20,7 +20,8 @@ public class Teach {
 	}
 	
 	public static void teach_exp(String rule, String var){
-		System.out.println("expression:" + rule + " " + "var:" + var);
+		Facts f = new Facts(var, rule, false);
+		Main.rules.put(var, f);
 	}
 
 }

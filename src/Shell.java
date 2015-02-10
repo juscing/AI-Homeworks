@@ -36,7 +36,7 @@ public class Shell {
 				} else {
 					//rule
 					String[] express = command[1].split("->");
-					Teach.teach_exp(express[0], express[1]);
+					Teach.teach_exp(express[0].trim(), express[1].trim());
 				}
 				break;
 			case "LIST":
