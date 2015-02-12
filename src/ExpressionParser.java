@@ -20,6 +20,14 @@ public class ExpressionParser {
 	}
 	
 	public static boolean evaluate(String s) {
+		//go through string and split on OR
+		
+		boolean result;
+		result = orProcess(s);
+		//System.out.println(result);
+		return result;
+		
+		/*
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -72,6 +80,7 @@ public class ExpressionParser {
 				}
 			}
 		}
+		*/
 		
 		
 		//return evaluate(s.substring(1,s.length()-1));
@@ -111,10 +120,65 @@ public class ExpressionParser {
 			
 		}
 		*/
-		return true;
+		//return true;
 	}
 	
-	
+	private static boolean andProcess(String s) {
+		System.out.println("AND PROCESS");
+		ArrayList<String> entries = new ArrayList<String>();
+		int rcount = 0;
+		int lcount = 0;
+		int pos = 0;
+		int lastPos = 0;
+		while(pos < s.length()) {
+			if(s.charAt(pos) == '('){
+				lcount++;
+			} else if(s.charAt(pos) == ')') {
+				rcount++;
+			}
+			if(lcount == rcount) {
+				if(s.charAt(pos) == '&') {
+					entries.add(s.substring(lastPos,pos));
+					lastPos = pos+1;
+				} else if(pos == s.length()-1) {
+					entries.add(s.substring(lastPos,pos+1));
+				}
+			}
+			pos++;
+		}
+		
+
+		for(String str : entries){
+			System.out.println(str);
+		}
+		
+		for(String entry : entries) {
+			if(entry.charAt(0) == '!') {
+				entry = entry.substring(1);
+				if(entry.contains("|")){
+					if(orProcess(entry)) {
+						return false;
+					}
+				}
+				if(entry.contains("(")) {
+					if(evaluate(entry)){
+						return false;
+					}
+				}
+			} else {
+				System.out.println("No !");
+				if(entry.contains("|")){
+					if(!orProcess(entry)) {
+						return false;
+					}
+				} else if(!Main.facts_known.contains(entry)){
+					System.out.println("didn't find " + entry);
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 	
 	private static boolean orProcess(String s) {
 		System.out.println("OR PROCESS");
@@ -144,6 +208,7 @@ public class ExpressionParser {
 			System.out.println(str);
 		}
 		
+		boolean result = true;
 		for(String entry : entries) {
 			if(entry.charAt(0) == '!') {
 				entry = entry.substring(1);
@@ -152,9 +217,24 @@ public class ExpressionParser {
 						return true;
 					}
 				}
+				else{
+					if(Main.facts_known.contains(entry))
+						if (result == true)
+							result = false;
+						else
+							return false;
+					else
+						return true;
+				}
 			} else {
 				if(Main.facts_known.contains(entry)){
 					return true;
+				}
+				else{
+					if (result == true)
+						result = false;
+					else
+						return false;
 				}
 			}
 		}
