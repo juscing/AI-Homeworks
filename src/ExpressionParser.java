@@ -208,8 +208,8 @@ public class ExpressionParser {
 			System.out.println(str);
 		}
 		
-		boolean result = true;
-		for(String entry : entries) {
+		for(int i = 0; i<entries.size(); i++) {
+			String entry = entries.get(i);
 			if(entry.charAt(0) == '!') {
 				entry = entry.substring(1);
 				if(entry.contains("(")) {
@@ -218,11 +218,12 @@ public class ExpressionParser {
 					}
 				}
 				else{
-					if(Main.facts_known.contains(entry))
-						if (result == true)
-							result = false;
+					if(Main.facts_known.contains(entry)){
+						if(i < entries.size())
+							continue;
 						else
 							return false;
+					}
 					else
 						return true;
 				}
@@ -231,8 +232,8 @@ public class ExpressionParser {
 					return true;
 				}
 				else{
-					if (result == true)
-						result = false;
+					if(i < entries.size())
+						continue;
 					else
 						return false;
 				}
