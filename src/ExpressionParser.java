@@ -20,12 +20,25 @@ public class ExpressionParser {
 	}
 	
 	public static boolean evaluate(String s) {
+		System.out.println(s);
 		//go through string and split on OR
+		int openCount = 0;
+		int pos = 0;
+		while(pos < s.length()) {
+			if(s.charAt(pos) == '('){
+				openCount++;
+			}else if(s.charAt(pos) == ')') {
+				if(pos == s.length() - 1 && openCount > 0 && s.charAt(0) == '(') {
+					// Found enclosing paren!
+					return evaluate(s.substring(1, s.length() - 1));
+				}
+				openCount--;
+			}
+			
+			pos++;
+		}
 		
-		boolean result;
-		result = orProcess(s);
-		//System.out.println(result);
-		return result;
+		return orProcess(s);
 		
 		/*
 		ArrayList<String> entries = new ArrayList<String>();
@@ -163,19 +176,26 @@ public class ExpressionParser {
 				//also, this probably should probably be handled first
 				
 				if(entry.contains("(")) {
-					if(!evaluate(entry)){
-						return true;
-					}
-				}
-				
-				else{
-					if(Main.facts_known.contains(entry))
+					if(evaluate(entry)){
 						continue;
-					else
+					} else {
 						numTrue++;
+					}
+				//BACKWARD CHAIN
+				} else if(Main.facts_known.contains(entry)) {
+					continue;
+				} else{
+					numTrue++;
 				}
 			} else { //entry does not start with !
-				if(Main.facts_known.contains(entry))
+				if(entry.contains("(")) {
+					if(evaluate(entry)){
+						numTrue++;
+					} else {
+						continue;
+					}
+				// BACKWARD CHAIN
+				}else if(Main.facts_known.contains(entry))
 					numTrue++;
 				else
 					continue;
@@ -216,46 +236,51 @@ public class ExpressionParser {
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
-			//something along these longs to handle &
-			if(entry.contains("&")){
-				boolean result = andProcess(entry);
-				if(result)
-					return true;
-				else
+			if(entry.charAt(0) == '!' && !entry.contains("&")) { //entry starts with !
+				entry = entry.substring(1);
+				//something along these longs to handle &
+				
+				if(entry.contains("(")) {
+					if(evaluate(entry)){
+						continue;
+					} else {
+						return true;
+					}
+				// BACKWARD CHAIN
+				} else if(Main.facts_known.contains(entry)){					
 					if(i < entries.size())
 						continue;
 					else
 						return false;
-			}
-			if(entry.charAt(0) == '!') { //entry starts with !
-				entry = entry.substring(1);
-				
-				//somehow deal with parenthesis, should probably start by removing
-				//them before calling evaluate on the substring
-				
-				//also, this probably should probably be handled first
-				
-				if(entry.contains("(")) {
-					if(!evaluate(entry)){
-						return true;
-					}
-				}
-				
-				else{
-					if(Main.facts_known.contains(entry)){
-						if(i < entries.size())
-							continue;
-						else
-							return false;
-					}
-					else
+				} else {
 						return true;
 				}
 			} else { //entry does not start with !
-				if(Main.facts_known.contains(entry)){
+				if(entry.contains("(") && !entry.contains("&")) {
+					if(evaluate(entry)){
+						return true;
+					} else {
+						continue;
+					}
+				} else if(entry.contains("&")){
+					if(andProcess(entry)) {
+						System.out.println("and process was true");
+						return true;
+					} else {
+						System.out.println("and process was FALSE");
+						if(i < entries.size()) {
+							System.out.println("more entries");
+							continue;
+						} else {
+							System.out.println("since last entry, return false");
+							return false;
+						}
+							
+					}
+				// BACKWARD CHAIN
+				} else if(Main.facts_known.contains(entry)){					
 					return true;
-				}
-				else{
+				} else {
 					if(i < entries.size())
 						continue;
 					else
@@ -263,7 +288,6 @@ public class ExpressionParser {
 				}
 			}
 		}
-		
 		return false;
 	}
 	
