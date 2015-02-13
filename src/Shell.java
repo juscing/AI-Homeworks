@@ -46,6 +46,7 @@ public class Shell {
 			
 				break;
 			case "QUERY":
+				Main.fact_cache.clear();
 				System.out.println(ExpressionParser.evaluate(command[1].trim()));
 				break;
 			case "WHY":

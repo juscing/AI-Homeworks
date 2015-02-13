@@ -20,6 +20,7 @@ public class ExpressionParser {
 	}
 	
 	public static boolean evaluate(String s) {
+		System.out.println("EVALUATE");
 		System.out.println(s);
 		//go through string and split on OR
 		int openCount = 0;
@@ -181,15 +182,24 @@ public class ExpressionParser {
 					} else {
 						numTrue++;
 					}
-				} else if(Main.rules.containsKey(entry)) {
-					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
+				} else if(Main.fact_cache.containsKey(entry)) {
+					// Cache hit!
+					if(Main.fact_cache.get(entry)) {
 						continue;
 					} else {
 						numTrue++;
 					}
 				} else if(Main.facts_known.contains(entry)) {
 					continue;
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						Main.fact_cache.put(entry, false);
+						continue;
+					} else {
+						Main.fact_cache.put(entry, true);
+						numTrue++;
+					}
 				} else{
 					numTrue++;
 				}
@@ -200,15 +210,25 @@ public class ExpressionParser {
 					} else {
 						continue;
 					}
-				} else if(Main.rules.containsKey(entry)) {
-					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
+				} else if(Main.facts_known.contains(entry)) {
+					numTrue++;
+				} else if(Main.fact_cache.containsKey(entry)) {
+					// Cache hit!
+					if(Main.fact_cache.get(entry)) {
 						numTrue++;
 					} else {
 						continue;
 					}
-				}else if(Main.facts_known.contains(entry))
-					numTrue++;
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						Main.fact_cache.put(entry, true);
+						numTrue++;
+					} else {
+						Main.fact_cache.put(entry, false);
+						continue;
+					}
+				}
 				else
 					continue;
 			}
@@ -258,19 +278,32 @@ public class ExpressionParser {
 					} else {
 						return true;
 					}
-				} else if(Main.rules.containsKey(entry)) {
-					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
-						if(i < entries.size())
-							continue;
-						else
-							return false;
-					}
 				} else if(Main.facts_known.contains(entry)){					
 					if(i < entries.size())
 						continue;
 					else
 						return false;
+				} else if(Main.fact_cache.containsKey(entry)) {
+					// Cache hit!
+					if(Main.fact_cache.get(entry)) {
+						if(i < entries.size())
+							continue;
+						else
+							return false;
+					} else {
+						return true;
+					}
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						Main.fact_cache.put(entry, true);
+						if(i < entries.size())
+							continue;
+						else
+							return false;
+					} else {
+						Main.fact_cache.put(entry, false);
+					}
 				} else {
 						return true;
 				}
@@ -296,14 +329,22 @@ public class ExpressionParser {
 						}
 							
 					}
-				} else if(Main.rules.containsKey(entry)) {
-					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
-						return true;
-					}
 				} else if(Main.facts_known.contains(entry)){
 					// Known Fact
 					return true;
+				} else if(Main.fact_cache.containsKey(entry)) {
+					// Cache hit!
+					if(Main.fact_cache.get(entry)) {
+						return true;
+					}
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						Main.fact_cache.put(entry, true);
+						return true;
+					} else {
+						Main.fact_cache.put(entry, false);
+					}
 				} else {
 					if(i < entries.size())
 						continue;
