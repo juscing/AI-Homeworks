@@ -32,8 +32,17 @@ public class ExpressionParser {
 	
 	public static String why(String s) {
 		why = "";
-		evaluate(s,true);
+		if(evaluate(s,true)) {
+			why = "true\n" + why;
+			why += trueExpression;
+		} else {
+			why = "false\n" + why;
+			why += falseExpression;
+		}
+		why += s +"\n";;
+		
 		return why;
+		
 	}
 	
 	public static boolean evaluate(String s) {
@@ -60,19 +69,12 @@ public class ExpressionParser {
 			pos++;
 		}
 		boolean result = orProcess(s, whyFlag);
-		if (whyFlag) {
-			if(result) {
-				why += trueExpression;
-			} else {
-				why += falseExpression;
-			}
-			why += Main.defs.get(s) +"\n";;
-		}
+		
 		return result;
 	}
 	
 	private static boolean andProcess(String s, boolean whyFlag) {
-		System.out.println("AND PROCESS");
+		//System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -95,9 +97,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-
+		/*
 		for(String str : entries)
 			System.out.println(str);
+		*/
 		
 		int numTrue = 0;
 		for(int i = 0; i<entries.size(); i++) {
@@ -116,7 +119,7 @@ public class ExpressionParser {
 					} else {
 						numTrue++;
 					}
-				} else if(Main.fact_cache.containsKey(entry)) {
+				} else if(Main.fact_cache.containsKey(entry) && !whyFlag) {
 					// Cache hit!
 					if(Main.fact_cache.get(entry)) {
 						continue;
@@ -125,7 +128,7 @@ public class ExpressionParser {
 					}
 				} else if(Main.facts_known.contains(entry)) {
 					if(whyFlag) {
-						why += trueFact + Main.defs.get(entry);
+						why += trueFact + "!" + Main.defs.get(entry) + "\n";
 					}
 					continue;
 				} else if(Main.rules.containsKey(entry)) {
@@ -138,6 +141,9 @@ public class ExpressionParser {
 						numTrue++;
 					}
 				} else{
+					if(whyFlag) {
+						why += falseFact + "!" + Main.defs.get(entry) + "\n";
+					}
 					numTrue++;
 				}
 			} else { //entry does not start with !
@@ -148,8 +154,11 @@ public class ExpressionParser {
 						continue;
 					}
 				} else if(Main.facts_known.contains(entry)) {
+					if(whyFlag) {
+						why += trueFact + Main.defs.get(entry) + "\n";
+					}
 					numTrue++;
-				} else if(Main.fact_cache.containsKey(entry)) {
+				} else if(Main.fact_cache.containsKey(entry) && !whyFlag) {
 					// Cache hit!
 					if(Main.fact_cache.get(entry)) {
 						numTrue++;
@@ -166,8 +175,12 @@ public class ExpressionParser {
 						continue;
 					}
 				}
-				else
+				else {
+					if(whyFlag) {
+						why += falseFact + Main.defs.get(entry) + "\n";
+					}
 					continue;
+				}
 			}
 		}
 		if(numTrue == entries.size())
@@ -218,11 +231,16 @@ public class ExpressionParser {
 						return true;
 					}
 				} else if(Main.facts_known.contains(entry)){					
-					if(i < entries.size())
+					if(i < entries.size()) {
+						if(whyFlag) {
+							why += falseFact + "!" + Main.defs.get(entry) + "\n";
+						}
 						continue;
-					else
+					} else {
 						return false;
-				} else if(Main.fact_cache.containsKey(entry)) {
+					}
+						
+				} else if(Main.fact_cache.containsKey(entry) && !whyFlag) {
 					// Cache hit!
 					if(Main.fact_cache.get(entry)) {
 						if(i < entries.size())
@@ -244,7 +262,10 @@ public class ExpressionParser {
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
-						return true;
+					if(whyFlag) {
+						why += trueFact + "!" + Main.defs.get(entry) + "\n";
+					}
+					return true;
 				}
 			} else { //entry does not start with !
 				if(entry.contains("(") && !entry.contains("&")) {
@@ -255,23 +276,26 @@ public class ExpressionParser {
 					}
 				} else if(entry.contains("&")){
 					if(andProcess(entry, whyFlag)) {
-						System.out.println("and process was true");
+						//System.out.println("and process was true");
 						return true;
 					} else {
-						System.out.println("and process was FALSE");
+						//System.out.println("and process was FALSE");
 						if(i < entries.size()) {
-							System.out.println("more entries");
+							//System.out.println("more entries");
 							continue;
 						} else {
-							System.out.println("since last entry, return false");
+							//System.out.println("since last entry, return false");
 							return false;
 						}
 							
 					}
 				} else if(Main.facts_known.contains(entry)){
 					// Known Fact
+					if(whyFlag) {
+						why += trueFact + Main.defs.get(entry) + "\n";
+					}
 					return true;
-				} else if(Main.fact_cache.containsKey(entry)) {
+				} else if(Main.fact_cache.containsKey(entry) && !whyFlag) {
 					// Cache hit!
 					if(Main.fact_cache.get(entry)) {
 						return true;
@@ -285,6 +309,9 @@ public class ExpressionParser {
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
+					if(whyFlag) {
+						why += falseFact + Main.defs.get(entry) + "\n";
+					}
 					if(i < entries.size())
 						continue;
 					else
