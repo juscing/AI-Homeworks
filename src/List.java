@@ -9,8 +9,11 @@ public class List {
 		}
 		s.append("\n");
 		s.append("Facts:\n");
-		for(String var: Main.facts_known) {
-			s.append("\t" + var + "\n");
+		// Fix the way this prints to use the original ordering!
+		for(String var: Main.defs.keySet()) {
+			if(Main.facts_known.contains(var) || Main.facts_inferred.contains(var)) {
+				s.append("\t" + var + "\n");
+			}
 		}
 		s.append("\n");
 		s.append("Rules:\n");

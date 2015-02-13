@@ -3,6 +3,17 @@ import java.util.ArrayList;
 
 public class ExpressionParser {
 	
+	private static final String falseFact = "I KNOW IT IS NOT TRUE THAT ";
+	private static final String trueFact = "I KNOW IT IS TRUE THAT ";
+	private static final String falseRulep1 = "BECAUSE IT IS NOT TRUE THAT ";
+	private static final String falseRulep2 = " I CANNOT PROVE ";
+	private static final String trueRulep1 = "BECAUSE ";
+	private static final String trueRulep2 = " I KNOW THAT ";
+	private static final String falseExpression = "THUS I CANNOT PROVE ";
+	private static final String trueExpression = "THUS I CAN PROVE ";
+	
+	private static String why = "";
+	
 	public static boolean checkDefined(String[] vars) {
 		for(String var : vars) {
 			if(!Main.defs.containsKey(var)) {
@@ -19,9 +30,19 @@ public class ExpressionParser {
 		return checkDefined(vars);
 	}
 	
+	public static String why(String s) {
+		why = "";
+		evaluate(s,true);
+		return why;
+	}
+	
 	public static boolean evaluate(String s) {
-		System.out.println("EVALUATE");
-		System.out.println(s);
+		return evaluate(s, false);
+	}
+	
+	private static boolean evaluate(String s, boolean whyFlag) {
+		//System.out.println("EVALUATE");
+		//System.out.println(s);
 		//go through string and split on OR
 		int openCount = 0;
 		int pos = 0;
@@ -38,106 +59,19 @@ public class ExpressionParser {
 			
 			pos++;
 		}
-		
-		return orProcess(s);
-		
-		/*
-		ArrayList<String> entries = new ArrayList<String>();
-		int rcount = 0;
-		int lcount = 0;
-		int pos = 0;
-		int lastPos = 0;
-		while(pos < s.length()) {
-			if(s.charAt(pos) == '('){
-				lcount++;
-			} else if(s.charAt(pos) == ')') {
-				rcount++;
-			}
-			if(lcount == rcount) {
-				if(s.charAt(pos) == '&') {
-					entries.add(s.substring(lastPos,pos));
-					lastPos = pos+1;
-				} else if(pos == s.length()-1) {
-					entries.add(s.substring(lastPos,pos+1));
-				}
-			}
-			pos++;
-		}
-		
-
-		for(String str : entries){
-			System.out.println(str);
-		}
-		
-		for(String entry : entries) {
-			if(entry.charAt(0) == '!') {
-				entry = entry.substring(1);
-				if(entry.contains("|")){
-					if(orProcess(entry)) {
-						return false;
-					}
-				}
-				if(entry.contains("(")) {
-					if(evaluate(entry)){
-						return false;
-					}
-				}
+		boolean result = orProcess(s, whyFlag);
+		if (whyFlag) {
+			if(result) {
+				why += trueExpression;
 			} else {
-				System.out.println("No !");
-				if(entry.contains("|")){
-					if(!orProcess(entry)) {
-						return false;
-					}
-				} else if(!Main.facts_known.contains(entry)){
-					System.out.println("didn't find " + entry);
-					return false;
-				}
+				why += falseExpression;
 			}
+			why += Main.defs.get(s) +"\n";;
 		}
-		*/
-		
-		
-		//return evaluate(s.substring(1,s.length()-1));
-		
-		/*
-		
-		ArrayList<String> vars = new ArrayList<String>();
-		ArrayList<char>
-		
-		
-		int lpar = s.indexOf("(");
-		boolean result;
-		if(lpar >= 0) {
-			// Found a parenthesis!
-			int lcount = 1;
-			int rcount = 0;
-			int pos = lpar + 1;
-			while(pos < s.length()) {
-				if(s.charAt(pos) == '('){
-					lcount++;
-				} else if(s.charAt(pos) == ')') {
-					rcount++;
-					if(lcount == rcount) {
-						//Found the matching paren!
-						//RECURSE!
-						result = evaluate(s.substring(lpar + 1,pos));
-						break;
-					}
-				}
-				pos++;
-			}
-		} else {
-			// ORDER OF OPERATIONS Not, And, Or
-			int notPos = s.indexOf("!");
-			int andPos = s.indexOf("&");
-			int orPos = s.indexOf("|");
-			
-		}
-		*/
-		//return true;
+		return result;
 	}
 	
-	private static boolean andProcess(String s) {
+	private static boolean andProcess(String s, boolean whyFlag) {
 		System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
@@ -190,6 +124,9 @@ public class ExpressionParser {
 						numTrue++;
 					}
 				} else if(Main.facts_known.contains(entry)) {
+					if(whyFlag) {
+						why += trueFact + Main.defs.get(entry);
+					}
 					continue;
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
@@ -239,8 +176,8 @@ public class ExpressionParser {
 			return false;
 	}
 	
-	private static boolean orProcess(String s) {
-		System.out.println("OR PROCESS");
+	private static boolean orProcess(String s, boolean whyFlag) {
+		// System.out.println("OR PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -263,8 +200,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
+		/*
 		for(String str : entries)
 			System.out.println(str);
+		*/
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
@@ -315,7 +254,7 @@ public class ExpressionParser {
 						continue;
 					}
 				} else if(entry.contains("&")){
-					if(andProcess(entry)) {
+					if(andProcess(entry, whyFlag)) {
 						System.out.println("and process was true");
 						return true;
 					} else {

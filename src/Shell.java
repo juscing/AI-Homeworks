@@ -15,7 +15,13 @@ public class Shell {
 			String[] command = getNextCommand();
 			switch(command[0].toUpperCase()){
 			case "TEACH":
-				
+				if(!Main.fact_cache.isEmpty()) {
+					Main.fact_cache.clear();
+				}
+				// Not sure on this one, check piazza
+				if(!Main.facts_inferred.isEmpty()) {
+					Main.facts_inferred.clear();
+				}
 				if(command[1].contains("=")) {
 					//fact
 					String[] parts = command[1].split("=");
@@ -46,11 +52,10 @@ public class Shell {
 			
 				break;
 			case "QUERY":
-				Main.fact_cache.clear();
 				System.out.println(ExpressionParser.evaluate(command[1].trim()));
 				break;
 			case "WHY":
-				
+				System.out.println(ExpressionParser.why(command[1].trim()));
 				break;
 			default:
 				System.out.println("Unsupported Command");
