@@ -148,9 +148,8 @@ public class ExpressionParser {
 		}
 		
 
-		for(String str : entries){
+		for(String str : entries)
 			System.out.println(str);
-		}
 		
 		int numTrue = 0;
 		for(int i = 0; i<entries.size(); i++) {
@@ -170,20 +169,16 @@ public class ExpressionParser {
 				}
 				
 				else{
-					if(Main.facts_known.contains(entry)){
+					if(Main.facts_known.contains(entry))
 						continue;
-					}
-					else{
+					else
 						numTrue++;
-					}
 				}
 			} else { //entry does not start with !
-				if(Main.facts_known.contains(entry)){
+				if(Main.facts_known.contains(entry))
 					numTrue++;
-				}
-				else{
+				else
 					continue;
-				}
 			}
 		}
 		if(numTrue == entries.size())
@@ -216,9 +211,8 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		for(String str : entries){
+		for(String str : entries)
 			System.out.println(str);
-		}
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
