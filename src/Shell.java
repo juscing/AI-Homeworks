@@ -49,7 +49,7 @@ public class Shell {
 				List.list();
 				break;
 			case "LEARN":
-			
+				Learn.learn();
 				break;
 			case "QUERY":
 				System.out.println(ExpressionParser.evaluate(command[1].trim()));
