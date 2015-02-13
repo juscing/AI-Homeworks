@@ -181,7 +181,13 @@ public class ExpressionParser {
 					} else {
 						numTrue++;
 					}
-				//BACKWARD CHAIN
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						continue;
+					} else {
+						numTrue++;
+					}
 				} else if(Main.facts_known.contains(entry)) {
 					continue;
 				} else{
@@ -194,7 +200,13 @@ public class ExpressionParser {
 					} else {
 						continue;
 					}
-				// BACKWARD CHAIN
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						numTrue++;
+					} else {
+						continue;
+					}
 				}else if(Main.facts_known.contains(entry))
 					numTrue++;
 				else
@@ -246,7 +258,14 @@ public class ExpressionParser {
 					} else {
 						return true;
 					}
-				// BACKWARD CHAIN
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						if(i < entries.size())
+							continue;
+						else
+							return false;
+					}
 				} else if(Main.facts_known.contains(entry)){					
 					if(i < entries.size())
 						continue;
@@ -277,8 +296,13 @@ public class ExpressionParser {
 						}
 							
 					}
-				// BACKWARD CHAIN
-				} else if(Main.facts_known.contains(entry)){					
+				} else if(Main.rules.containsKey(entry)) {
+					// BACKWARD CHAIN
+					if(evaluate(Main.rules.get(entry))) {
+						return true;
+					}
+				} else if(Main.facts_known.contains(entry)){
+					// Known Fact
 					return true;
 				} else {
 					if(i < entries.size())
