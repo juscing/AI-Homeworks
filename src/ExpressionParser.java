@@ -152,32 +152,44 @@ public class ExpressionParser {
 			System.out.println(str);
 		}
 		
-		for(String entry : entries) {
-			if(entry.charAt(0) == '!') {
+		int numTrue = 0;
+		for(int i = 0; i<entries.size(); i++) {
+			String entry = entries.get(i);
+			if(entry.charAt(0) == '!') { //entry starts with !
 				entry = entry.substring(1);
-				if(entry.contains("|")){
-					if(orProcess(entry)) {
-						return false;
-					}
-				}
+				
+				//somehow deal with parenthesis, should probably start by removing
+				//them before calling evaluate on the substring
+				
+				//also, this probably should probably be handled first
+				
 				if(entry.contains("(")) {
-					if(evaluate(entry)){
-						return false;
+					if(!evaluate(entry)){
+						return true;
 					}
 				}
-			} else {
-				System.out.println("No !");
-				if(entry.contains("|")){
-					if(!orProcess(entry)) {
-						return false;
+				
+				else{
+					if(Main.facts_known.contains(entry)){
+						continue;
 					}
-				} else if(!Main.facts_known.contains(entry)){
-					System.out.println("didn't find " + entry);
-					return false;
+					else{
+						numTrue++;
+					}
+				}
+			} else { //entry does not start with !
+				if(Main.facts_known.contains(entry)){
+					numTrue++;
+				}
+				else{
+					continue;
 				}
 			}
 		}
-		return true;
+		if(numTrue == entries.size())
+			return true;
+		else
+			return false;
 	}
 	
 	private static boolean orProcess(String s) {
@@ -210,13 +222,31 @@ public class ExpressionParser {
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
-			if(entry.charAt(0) == '!') {
+			//something along these longs to handle &
+			if(entry.contains("&")){
+				boolean result = andProcess(entry);
+				if(result)
+					return true;
+				else
+					if(i < entries.size())
+						continue;
+					else
+						return false;
+			}
+			if(entry.charAt(0) == '!') { //entry starts with !
 				entry = entry.substring(1);
+				
+				//somehow deal with parenthesis, should probably start by removing
+				//them before calling evaluate on the substring
+				
+				//also, this probably should probably be handled first
+				
 				if(entry.contains("(")) {
 					if(!evaluate(entry)){
 						return true;
 					}
 				}
+				
 				else{
 					if(Main.facts_known.contains(entry)){
 						if(i < entries.size())
@@ -227,7 +257,7 @@ public class ExpressionParser {
 					else
 						return true;
 				}
-			} else {
+			} else { //entry does not start with !
 				if(Main.facts_known.contains(entry)){
 					return true;
 				}
