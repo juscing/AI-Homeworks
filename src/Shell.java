@@ -34,7 +34,7 @@ public class Shell {
 					if(state.contains("\""))
 						Teach.teach_string(var, state);
 					else{
-						if(state.equals("false"))
+						if(state.toLowerCase().equals("false"))
 							Teach.teach_bool(var, false);
 						else
 							Teach.teach_bool(var, true);
