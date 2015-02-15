@@ -134,9 +134,11 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
+						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					} else {
+						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					}
@@ -168,9 +170,11 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
+						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					} else {
+						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					}
@@ -253,12 +257,14 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
+						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, true);
 						if(i < entries.size())
 							continue;
 						else
 							return false;
 					} else {
+						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
@@ -303,9 +309,11 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
+						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, true);
 						return true;
 					} else {
+						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
