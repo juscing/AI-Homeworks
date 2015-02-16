@@ -61,10 +61,27 @@ public class ExpressionParser {
 		}
 		
 		for(int i=0; i<entries.size(); i++){
-			System.out.println(entries.get(i));
+			//System.out.println(entries.get(i));
 			String entry = entries.get(i);
-			if(entry.length() == 1){
-				rule = rule.concat(" "+entry+" ");
+			if(!entry.contains("(")&&!entry.contains(")")&&!entry.contains("!")&&
+					!entry.contains("&")&&!entry.contains("|")){
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var + " ");
+			}
+			else if((entry.contains("(")||entry.contains(")")||entry.contains("!")||
+					entry.contains("&")||entry.contains("|"))&&(entry.length()==1)){
+				//String var = Main.defs.get(entry);
+				//rule = rule.concat(var + " ");
+				//rule = rule.concat(entry);
+				
+				if(entry.contains("&"))
+					rule = rule.concat(" AND ");
+				else if(entry.contains("|"))
+					rule = rule.concat(" OR ");
+				else if(entry.contains("!"))
+					rule = rule.concat(" NOT ");
+				else
+					rule = rule.concat(" " + entry + " ");
 			}
 			else if(entry.endsWith("(")){
 				entry = entry.substring(0, entry.length()-1);
@@ -79,26 +96,26 @@ public class ExpressionParser {
 			else if(entry.endsWith("!")){
 				entry = entry.substring(0, entry.length()-1);
 				String var = Main.defs.get(entry);
-				rule = rule.concat(var + " ! ");
+				rule = rule.concat(var + " NOT ");
 			}
 			else if(entry.endsWith("&")){
 				entry = entry.substring(0, entry.length()-1);
 				String var = Main.defs.get(entry);
-				rule = rule.concat(var + " & ");
+				rule = rule.concat(var + " AND ");
 			}
 			else if(entry.endsWith("|")){
 				entry = entry.substring(0, entry.length()-1);
 				String var = Main.defs.get(entry);
-				rule = rule.concat(var + " | ");
+				rule = rule.concat(var + " OR ");
 			} 
 			else{
-				String var = Main.defs.get(entry);
-				rule = rule.concat(var);
+				//String var = Main.defs.get(entry);
+				//rule = rule.concat(entry);
 			}
-			System.out.println(rule);
+			//System.out.println(rule);
 		}
 		
-		return rule;
+		return rule.trim();
 	}
 	
 	public static boolean checkDefined(String expr) {
@@ -117,7 +134,7 @@ public class ExpressionParser {
 			why = "false\n" + why;
 			why += falseExpression;
 		}
-		why += Main.defs.get(s) +"\n";;
+		why += stringifyRule(s) +"\n";;
 		
 		return why;
 		
@@ -139,7 +156,7 @@ public class ExpressionParser {
 			}else if(s.charAt(pos) == ')') {
 				if(pos == s.length() - 1 && openCount > 0 && s.charAt(0) == '(') {
 					// Found enclosing paren!
-					return evaluate(s.substring(1, s.length() - 1));
+					return evaluate(s.substring(1, s.length() - 1), whyFlag);
 				}
 				openCount--;
 			}
@@ -152,7 +169,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean andProcess(String s, boolean whyFlag) {
-		System.out.println("AND PROCESS");
+		//System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -193,8 +210,10 @@ public class ExpressionParser {
 				
 				if(entry.contains("(")) {
 					if(evaluate(entry, whyFlag)){
+						why += falseExpression + "NOT " + stringifyRule(entry) + "\n";
 						continue;
 					} else {
+						why += trueExpression + "NOT " + stringifyRule(entry) + "\n";
 						numTrue++;
 					}
 				} else if(Main.fact_cache.containsKey(entry) && !whyFlag) {
@@ -211,14 +230,14 @@ public class ExpressionParser {
 					continue;
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
-						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
+					if(evaluate(Main.rules.get(entry), whyFlag)) {
+						//System.out.println(stringifyRule(Main.rules.get(entry)));
+						why += falseRulep1 + "NOT " + stringifyRule(Main.rules.get(entry)) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					} else {
-						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
+						//System.out.println(stringifyRule(Main.rules.get(entry)));
+						why += trueRulep1 + "NOT " + stringifyRule(Main.rules.get(entry)) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					}
@@ -231,13 +250,15 @@ public class ExpressionParser {
 			} else { //entry does not start with !
 				if(entry.contains("(")) {
 					if(evaluate(entry, whyFlag)){
+						why += trueExpression + stringifyRule(entry) + "\n";
 						numTrue++;
 					} else {
+						why += falseExpression + stringifyRule(entry) + "\n";
 						continue;
 					}
 				} else if(Main.facts_known.contains(entry)) {
 					if(whyFlag) {
-						System.out.println("true fact");
+						//System.out.println("true fact");
 						why += trueFact + Main.defs.get(entry) + "\n";
 					}
 					numTrue++;
@@ -250,14 +271,14 @@ public class ExpressionParser {
 					}
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
-						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
+					if(evaluate(Main.rules.get(entry), whyFlag)) {
+						//System.out.println(stringifyRule(Main.rules.get(entry)));
+						why += trueRulep1 + stringifyRule(Main.rules.get(entry)) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					} else {
-						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
+						//System.out.println(stringifyRule(Main.rules.get(entry)));
+						why += falseRulep1 + stringifyRule(Main.rules.get(entry)) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					}
@@ -313,14 +334,16 @@ public class ExpressionParser {
 				
 				if(entry.contains("(")) {
 					if(evaluate(entry, whyFlag)){
+						why += falseExpression + "NOT " + stringifyRule(entry) + "\n";
 						continue;
 					} else {
+						why += trueExpression + "NOT " + stringifyRule(entry) + "\n";
 						return true;
 					}
 				} else if(Main.facts_known.contains(entry)){					
 					if(i < entries.size()) {
 						if(whyFlag) {
-							why += falseFact + "!" + Main.defs.get(entry) + "\n";
+							why += falseFact + "NOT " + Main.defs.get(entry) + "\n";
 						}
 						continue;
 					} else {
@@ -340,14 +363,14 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry), whyFlag)) {
-						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
+						why += falseRulep1 + "NOT " + stringifyRule(Main.rules.get(entry)) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						if(i < entries.size())
 							continue;
 						else
 							return false;
 					} else {
-						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
+						why += trueRulep1 + "NOT " + stringifyRule(Main.rules.get(entry)) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
@@ -392,11 +415,11 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry), whyFlag)) {
-						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
+						why += trueRulep1 + stringifyRule(Main.rules.get(entry)) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						return true;
 					} else {
-						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
+						why += falseRulep1 + stringifyRule(Main.rules.get(entry)) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
