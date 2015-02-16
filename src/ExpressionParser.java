@@ -23,6 +23,84 @@ public class ExpressionParser {
 		return true;
 	}
 	
+	public static String stringifyRule(String s){
+		//System.out.println("stringify");
+		//System.out.println(s);
+		ArrayList<String> entries = new ArrayList<String>();
+		
+		int pos = 0;
+		int lastPos = 0;
+		
+		String rule = "";
+		
+		while(pos < s.length()) {
+			if(s.charAt(pos) == '('){
+				entries.add(s.substring(lastPos,pos+1));
+				lastPos = pos+1;
+			}
+			else if(s.charAt(pos) == ')'){
+				entries.add(s.substring(lastPos,pos+1));
+				lastPos = pos+1;
+			}
+			else if(s.charAt(pos) == '!'){
+				entries.add(s.substring(lastPos,pos+1));
+				lastPos = pos+1;
+			}
+			else if(s.charAt(pos) == '&'){
+				entries.add(s.substring(lastPos,pos+1));
+				lastPos = pos+1;
+			}
+			else if(s.charAt(pos) == '|'){
+				entries.add(s.substring(lastPos,pos+1));
+				lastPos = pos+1;
+			} 
+			else if(pos == s.length()-1){
+				entries.add(s.substring(lastPos,pos+1));
+			}
+			pos++;
+		}
+		
+		for(int i=0; i<entries.size(); i++){
+			System.out.println(entries.get(i));
+			String entry = entries.get(i);
+			if(entry.length() == 1){
+				rule = rule.concat(" "+entry+" ");
+			}
+			else if(entry.endsWith("(")){
+				entry = entry.substring(0, entry.length()-1);
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var + " ( ");
+			}
+			else if(entry.endsWith(")")){
+				entry = entry.substring(0, entry.length()-1);
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var + " ) ");
+			}
+			else if(entry.endsWith("!")){
+				entry = entry.substring(0, entry.length()-1);
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var + " ! ");
+			}
+			else if(entry.endsWith("&")){
+				entry = entry.substring(0, entry.length()-1);
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var + " & ");
+			}
+			else if(entry.endsWith("|")){
+				entry = entry.substring(0, entry.length()-1);
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var + " | ");
+			} 
+			else{
+				String var = Main.defs.get(entry);
+				rule = rule.concat(var);
+			}
+			System.out.println(rule);
+		}
+		
+		return rule;
+	}
+	
 	public static boolean checkDefined(String expr) {
 		expr = expr.replaceAll("[&!|()]", " ");
 		expr = expr.trim().replaceAll("\\s+", " ");
@@ -39,6 +117,7 @@ public class ExpressionParser {
 			why = "false\n" + why;
 			why += falseExpression;
 		}
+		//String def = Main.defs.get(s);
 		why += s +"\n";;
 		
 		return why;
@@ -74,7 +153,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean andProcess(String s, boolean whyFlag) {
-		//System.out.println("AND PROCESS");
+		System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -134,10 +213,12 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
+						System.out.println(stringifyRule(Main.rules.get(entry)));
 						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					} else {
+						System.out.println(stringifyRule(Main.rules.get(entry)));
 						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
@@ -170,10 +251,12 @@ public class ExpressionParser {
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
+						System.out.println(stringifyRule(Main.rules.get(entry)));
 						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					} else {
+						System.out.println(stringifyRule(Main.rules.get(entry)));
 						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + entry + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
