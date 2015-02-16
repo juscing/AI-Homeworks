@@ -117,8 +117,7 @@ public class ExpressionParser {
 			why = "false\n" + why;
 			why += falseExpression;
 		}
-		//String def = Main.defs.get(s);
-		why += s +"\n";;
+		why += Main.defs.get(s) +"\n";;
 		
 		return why;
 		
@@ -193,7 +192,7 @@ public class ExpressionParser {
 				//also, this probably should probably be handled first
 				
 				if(entry.contains("(")) {
-					if(evaluate(entry)){
+					if(evaluate(entry, whyFlag)){
 						continue;
 					} else {
 						numTrue++;
@@ -207,19 +206,19 @@ public class ExpressionParser {
 					}
 				} else if(Main.facts_known.contains(entry)) {
 					if(whyFlag) {
-						why += trueFact + "!" + Main.defs.get(entry) + "\n";
+						why += falseFact + "!" + Main.defs.get(entry) + "\n";
 					}
 					continue;
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
 						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + entry + "\n";
+						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					} else {
 						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + entry + "\n";
+						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					}
@@ -231,13 +230,14 @@ public class ExpressionParser {
 				}
 			} else { //entry does not start with !
 				if(entry.contains("(")) {
-					if(evaluate(entry)){
+					if(evaluate(entry, whyFlag)){
 						numTrue++;
 					} else {
 						continue;
 					}
 				} else if(Main.facts_known.contains(entry)) {
 					if(whyFlag) {
+						System.out.println("true fact");
 						why += trueFact + Main.defs.get(entry) + "\n";
 					}
 					numTrue++;
@@ -252,12 +252,12 @@ public class ExpressionParser {
 					// BACKWARD CHAIN
 					if(evaluate(Main.rules.get(entry))) {
 						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + entry + "\n";
+						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						numTrue++;
 					} else {
 						System.out.println(stringifyRule(Main.rules.get(entry)));
-						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + entry + "\n";
+						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 						continue;
 					}
@@ -312,7 +312,7 @@ public class ExpressionParser {
 				//something along these longs to handle &
 				
 				if(entry.contains("(")) {
-					if(evaluate(entry)){
+					if(evaluate(entry, whyFlag)){
 						continue;
 					} else {
 						return true;
@@ -339,15 +339,15 @@ public class ExpressionParser {
 					}
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
-						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + entry + "\n";
+					if(evaluate(Main.rules.get(entry), whyFlag)) {
+						why += falseRulep1 + "!" + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						if(i < entries.size())
 							continue;
 						else
 							return false;
 					} else {
-						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + entry + "\n";
+						why += trueRulep1 + "!" + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
@@ -358,7 +358,7 @@ public class ExpressionParser {
 				}
 			} else { //entry does not start with !
 				if(entry.contains("(") && !entry.contains("&")) {
-					if(evaluate(entry)){
+					if(evaluate(entry, whyFlag)){
 						return true;
 					} else {
 						continue;
@@ -391,12 +391,12 @@ public class ExpressionParser {
 					}
 				} else if(Main.rules.containsKey(entry)) {
 					// BACKWARD CHAIN
-					if(evaluate(Main.rules.get(entry))) {
-						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + entry + "\n";
+					if(evaluate(Main.rules.get(entry), whyFlag)) {
+						why += trueRulep1 + Main.rules.get(entry) + trueRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, true);
 						return true;
 					} else {
-						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + entry + "\n";
+						why += falseRulep1 + Main.rules.get(entry) + falseRulep2 + Main.defs.get(entry) + "\n";
 						Main.fact_cache.put(entry, false);
 					}
 				} else {
