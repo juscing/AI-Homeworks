@@ -17,8 +17,8 @@ java Main
 ## Notes on our Implementation
 * The LEARN command adds things to the list of facts that are known, but any call to TEACH after calling LEARN will invalidate any knowledge gained by calling LEARN.
 * If a variable has been taught as a result of a rule, then trying to use TEACH to set the truth value of the variable will be ignored. If there was previously a truth value associated with a variable when it is taught as a rule, this will be deleted.
-* Because of these properties, WHY command will always backwards chain, as will the query command. Facts acquired by using LEARN will be ignored when backwards chaining, so all rules will always be fully evaluated or explained.
-* If all rules are not defined in an expression of a rule, the rule will be ignored.
+* Because of these properties, the WHY command will always backwards chain, as will the QUERY command. Facts acquired by using LEARN will be ignored when backwards chaining, so all rules will always be fully evaluated or explained.
+* If there are any variables in a rule that have not been previously defind, the rule will be ignored.
 
 ## Sample I/O
 ```
