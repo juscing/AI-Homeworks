@@ -19,7 +19,7 @@ public class Learn {
 	}
 	
 	private static boolean evaluate(String s) {
-		System.out.println("Learn");
+		//System.out.println("Learn");
 		int openCount = 0;
 		int pos = 0;
 		while(pos < s.length()) {
@@ -40,7 +40,7 @@ public class Learn {
 	}
 	
 	private static boolean andProcess(String s) {
-		System.out.println("AND PROCESS");
+		//System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -63,9 +63,6 @@ public class Learn {
 			pos++;
 		}
 		
-
-		for(String str : entries)
-			System.out.println(str);
 		
 		int numTrue = 0;
 		for(int i = 0; i<entries.size(); i++) {
@@ -176,15 +173,15 @@ public class Learn {
 					}
 				} else if(entry.contains("&")){
 					if(andProcess(entry)) {
-						System.out.println("and process was true");
+						//System.out.println("and process was true");
 						return true;
 					} else {
-						System.out.println("and process was FALSE");
+						//System.out.println("and process was FALSE");
 						if(i < entries.size()) {
-							System.out.println("more entries");
+							//System.out.println("more entries");
 							continue;
 						} else {
-							System.out.println("since last entry, return false");
+							//System.out.println("since last entry, return false");
 							return false;
 						}
 							

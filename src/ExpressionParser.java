@@ -225,7 +225,7 @@ public class ExpressionParser {
 					}
 				} else if(Main.facts_known.contains(entry)) {
 					if(whyFlag) {
-						why += falseFact + "!" + Main.defs.get(entry) + "\n";
+						why += falseFact + "NOT " + Main.defs.get(entry) + "\n";
 					}
 					continue;
 				} else if(Main.rules.containsKey(entry)) {
@@ -243,7 +243,7 @@ public class ExpressionParser {
 					}
 				} else{
 					if(whyFlag) {
-						why += falseFact + "!" + Main.defs.get(entry) + "\n";
+						why += falseFact + "NOT " + Main.defs.get(entry) + "\n";
 					}
 					numTrue++;
 				}
@@ -375,7 +375,7 @@ public class ExpressionParser {
 					}
 				} else {
 					if(whyFlag) {
-						why += trueFact + "!" + Main.defs.get(entry) + "\n";
+						why += trueFact + "NOT " + Main.defs.get(entry) + "\n";
 					}
 					return true;
 				}

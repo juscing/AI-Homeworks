@@ -57,10 +57,14 @@ public class Shell {
 			case "WHY":
 				System.out.println(ExpressionParser.why(command[1].trim()));
 				break;
+			case "EXIT":
+				this.end = true;
+				break;
 			default:
 				System.out.println("Unsupported Command");
 			}
 		}
+		input.close();
 	}
 	
 	private String[] getNextCommand() {
