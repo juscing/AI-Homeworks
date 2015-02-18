@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class ExpressionParser {
 	
 	private static final String falseFact = "I KNOW IT IS NOT TRUE THAT ";
-	private static final String trueFact = "I KNOW IT IS TRUE THAT ";
+	private static final String trueFact = "I KNOW THAT ";
 	private static final String falseRulep1 = "BECAUSE IT IS NOT TRUE THAT ";
 	private static final String falseRulep2 = " I CANNOT PROVE ";
 	private static final String trueRulep1 = "BECAUSE ";

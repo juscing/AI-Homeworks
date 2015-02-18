@@ -1,3 +1,4 @@
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 
@@ -12,7 +13,13 @@ public class Shell {
 	
 	public void run() {
 		while(!end) {
-			String[] command = getNextCommand();
+			String[] command;
+			try {
+				command = getNextCommand();
+			} catch(NoSuchElementException e) {
+				end = true;
+				continue;
+			}
 			switch(command[0].toUpperCase()){
 			case "TEACH":
 				if(!Main.fact_cache.isEmpty()) {
@@ -67,7 +74,7 @@ public class Shell {
 		input.close();
 	}
 	
-	private String[] getNextCommand() {
+	private String[] getNextCommand() throws NoSuchElementException {
 		String line = input.nextLine();
 		line = line.trim().replaceAll("\\s+", " ");
 		int spacePos = line.indexOf(" ");

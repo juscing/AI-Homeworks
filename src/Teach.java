@@ -3,6 +3,12 @@ public class Teach {
 	
 	public static void teach_string(String var, String a){
 		if(!Main.defs.containsKey(var)) {
+			if(a.charAt(0) == '"') {
+				a = a.substring(1);
+			}
+			if(a.charAt(a.length() - 1) == '"') {
+				a = a.substring(0,a.length() - 1);
+			}
 			Main.defs.put(var, a);
 		}
 	}
