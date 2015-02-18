@@ -145,8 +145,8 @@ public class ExpressionParser {
 	}
 	
 	private static boolean evaluate(String s, boolean whyFlag) {
-		System.out.println("EVALUATE");
-		System.out.println(s);
+		//System.out.println("EVALUATE");
+		//System.out.println(s);
 		//go through string and split on OR
 		int openCount = 0;
 		int pos = 1;
@@ -190,7 +190,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean andProcess(String s, boolean whyFlag) {
-		System.out.println("AND PROCESS");
+		//System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -213,10 +213,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		
+		/*
 		for(String str : entries)
 			System.out.println(str);
-		
+		*/
 		
 		int numTrue = 0;
 		for(int i = 0; i<entries.size(); i++) {
@@ -319,7 +319,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean orProcess(String s, boolean whyFlag) {
-		System.out.println("OR PROCESS");
+		//System.out.println("OR PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -342,10 +342,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		
+		/*
 		for(String str : entries)
 			System.out.println(str);
-		
+		*/
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);

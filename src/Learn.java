@@ -21,18 +21,24 @@ public class Learn {
 	private static boolean evaluate(String s) {
 		//System.out.println("Learn");
 		int openCount = 0;
-		int pos = 0;
-		while(pos < s.length()) {
-			if(s.charAt(pos) == '('){
-				openCount++;
-			}else if(s.charAt(pos) == ')') {
-				if(openCount == 1 && pos < s.length() - 1){
-					break;
-				} else {
-					return evaluate(s.substring(1, s.length() - 1));
+		int pos = 1;
+		if(s.charAt(0) == '(' && s.charAt(s.length() - 1) == ')') {
+			openCount = 1;
+			while(pos < s.length() - 1) {
+				if(s.charAt(pos) == '('){
+					openCount++;
+				} else if(s.charAt(pos) == ')'){
+					if(openCount == 1) {
+						openCount = 0;
+						break;
+					}
+					openCount--;
 				}
+				pos++;
 			}
-			pos++;
+		}
+		if(openCount == 1){
+			return evaluate(s.substring(1, s.length() - 1));
 		}
 		return orProcess(s);
 	}
