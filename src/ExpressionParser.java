@@ -146,16 +146,19 @@ public class ExpressionParser {
 	
 	private static boolean evaluate(String s, boolean whyFlag) {
 		//System.out.println("EVALUATE");
-		//System.out.println(s);
+		System.out.println(s);
 		//go through string and split on OR
 		int openCount = 0;
 		int pos = 0;
+		int lastOpen = -1;
 		while(pos < s.length()) {
 			if(s.charAt(pos) == '('){
+				lastOpen = pos;
 				openCount++;
 			}else if(s.charAt(pos) == ')') {
-				if(pos == s.length() - 1 && openCount > 0 && s.charAt(0) == '(') {
+				if(lastOpen == 0 && openCount > 0 && pos == s.length() - 1 && s.charAt(0) == '(' && s.charAt(s.length() - 1) == ')') {
 					// Found enclosing paren!
+					System.out.println(s);
 					return evaluate(s.substring(1, s.length() - 1), whyFlag);
 				}
 				openCount--;
@@ -163,6 +166,7 @@ public class ExpressionParser {
 			
 			pos++;
 		}
+		System.out.println(s);
 		boolean result = orProcess(s, whyFlag);
 		
 		return result;
@@ -298,7 +302,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean orProcess(String s, boolean whyFlag) {
-		// System.out.println("OR PROCESS");
+		System.out.println("OR PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -321,10 +325,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		/*
+		
 		for(String str : entries)
 			System.out.println(str);
-		*/
+		
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
@@ -332,7 +336,21 @@ public class ExpressionParser {
 				entry = entry.substring(1);
 				//something along these longs to handle &
 				
-				if(entry.contains("(")) {
+				if(entry.contains("&")){
+					if(andProcess(entry, whyFlag)) {
+						//System.out.println("and process was true");
+						if(i < entries.size()) {
+							//System.out.println("more entries");
+							continue;
+						} else {
+							//System.out.println("since last entry, return false");
+							return false;
+						}
+					} else {
+						//System.out.println("and process was FALSE");
+						return true;
+					}
+				} else if(entry.contains("(") && !entry.contains("&")) {
 					if(evaluate(entry, whyFlag)){
 						why += falseExpression + "NOT " + stringifyRule(entry) + "\n";
 						continue;
