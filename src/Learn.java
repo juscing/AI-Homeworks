@@ -26,17 +26,15 @@ public class Learn {
 			if(s.charAt(pos) == '('){
 				openCount++;
 			}else if(s.charAt(pos) == ')') {
-				if(pos == s.length() - 1 && openCount > 0 && s.charAt(0) == '(') {
-					// Found enclosing paren!
+				if(openCount == 1 && pos < s.length() - 1){
+					break;
+				} else {
 					return evaluate(s.substring(1, s.length() - 1));
 				}
-				openCount--;
 			}
-			
 			pos++;
 		}
-		boolean result = orProcess(s);
-		return result;
+		return orProcess(s);
 	}
 	
 	private static boolean andProcess(String s) {
@@ -144,8 +142,13 @@ public class Learn {
 			if(entry.charAt(0) == '!' && !entry.contains("&")) { //entry starts with !
 				entry = entry.substring(1);
 				//something along these longs to handle &
-				
-				if(entry.contains("(")) {
+				if(entry.contains("(") && !entry.contains("&")) {
+					if(evaluate(entry)){
+						return true;
+					} else {
+						continue;
+					}
+				} else if(entry.contains("(")) {
 					if(evaluate(entry)){
 						continue;
 					} else {

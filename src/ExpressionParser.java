@@ -146,27 +146,23 @@ public class ExpressionParser {
 	
 	private static boolean evaluate(String s, boolean whyFlag) {
 		//System.out.println("EVALUATE");
-		System.out.println(s);
+		// System.out.println(s);
 		//go through string and split on OR
 		int openCount = 0;
 		int pos = 0;
-		int lastOpen = -1;
 		while(pos < s.length()) {
 			if(s.charAt(pos) == '('){
-				lastOpen = pos;
 				openCount++;
 			}else if(s.charAt(pos) == ')') {
-				if(lastOpen == 0 && openCount > 0 && pos == s.length() - 1 && s.charAt(0) == '(' && s.charAt(s.length() - 1) == ')') {
-					// Found enclosing paren!
-					System.out.println(s);
+				if(openCount == 1 && pos < s.length() - 1){
+					break;
+				} else {
 					return evaluate(s.substring(1, s.length() - 1), whyFlag);
 				}
-				openCount--;
 			}
-			
 			pos++;
 		}
-		System.out.println(s);
+		//System.out.println(s);
 		boolean result = orProcess(s, whyFlag);
 		
 		return result;
@@ -302,7 +298,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean orProcess(String s, boolean whyFlag) {
-		System.out.println("OR PROCESS");
+		//System.out.println("OR PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -325,10 +321,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		
+		/*
 		for(String str : entries)
 			System.out.println(str);
-		
+		*/
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
