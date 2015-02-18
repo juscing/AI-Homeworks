@@ -145,23 +145,44 @@ public class ExpressionParser {
 	}
 	
 	private static boolean evaluate(String s, boolean whyFlag) {
-		//System.out.println("EVALUATE");
-		// System.out.println(s);
+		System.out.println("EVALUATE");
+		System.out.println(s);
 		//go through string and split on OR
 		int openCount = 0;
-		int pos = 0;
+		int pos = 1;
+		if(s.charAt(0) == '(' && s.charAt(s.length() - 1) == ')') {
+			openCount = 1;
+			while(pos < s.length() - 1) {
+				if(s.charAt(pos) == '('){
+					openCount++;
+				} else if(s.charAt(pos) == ')'){
+					if(openCount == 1) {
+						openCount = 0;
+						break;
+					}
+					openCount--;
+				}
+				pos++;
+			}
+		}
+		if(openCount == 1){
+			return evaluate(s.substring(1, s.length() - 1), whyFlag);
+		}
+		/*
 		while(pos < s.length()) {
 			if(s.charAt(pos) == '('){
 				openCount++;
 			}else if(s.charAt(pos) == ')') {
-				if(openCount == 1 && pos < s.length() - 1){
+				openCount--;
+				if(openCount == 0 && pos < s.length() - 1){
 					break;
-				} else {
+				} else if(){
 					return evaluate(s.substring(1, s.length() - 1), whyFlag);
 				}
 			}
 			pos++;
 		}
+		*/
 		//System.out.println(s);
 		boolean result = orProcess(s, whyFlag);
 		
@@ -169,7 +190,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean andProcess(String s, boolean whyFlag) {
-		//System.out.println("AND PROCESS");
+		System.out.println("AND PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -192,10 +213,10 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		/*
+		
 		for(String str : entries)
 			System.out.println(str);
-		*/
+		
 		
 		int numTrue = 0;
 		for(int i = 0; i<entries.size(); i++) {
@@ -298,7 +319,7 @@ public class ExpressionParser {
 	}
 	
 	private static boolean orProcess(String s, boolean whyFlag) {
-		//System.out.println("OR PROCESS");
+		System.out.println("OR PROCESS");
 		ArrayList<String> entries = new ArrayList<String>();
 		int rcount = 0;
 		int lcount = 0;
@@ -321,14 +342,14 @@ public class ExpressionParser {
 			pos++;
 		}
 		
-		/*
+		
 		for(String str : entries)
 			System.out.println(str);
-		*/
+		
 		
 		for(int i = 0; i<entries.size(); i++) {
 			String entry = entries.get(i);
-			if(entry.charAt(0) == '!' && !entry.contains("&")) { //entry starts with !
+			if(entry.charAt(0) == '!') { //entry starts with !
 				entry = entry.substring(1);
 				//something along these longs to handle &
 				
