@@ -148,15 +148,26 @@ public class Learn {
 			if(entry.charAt(0) == '!' && !entry.contains("&")) { //entry starts with !
 				entry = entry.substring(1);
 				//something along these longs to handle &
-				if(entry.contains("(") && !entry.contains("&")) {
-					if(evaluate(entry)){
-						return true;
+				if(entry.contains("&")){
+					if(andProcess(entry)) {
+						//System.out.println("and process was true");
+						if(i < entries.size()) {
+							//System.out.println("more entries");
+							continue;
+						} else {
+							//System.out.println("since last entry, return false");
+							return false;
+						}
 					} else {
-						continue;
+						//System.out.println("and process was FALSE");
+						return true;
 					}
 				} else if(entry.contains("(")) {
 					if(evaluate(entry)){
-						continue;
+						if(i < entries.size())
+							continue;
+						else
+							return false;
 					} else {
 						return true;
 					}
@@ -174,13 +185,7 @@ public class Learn {
 						return true;
 				}
 			} else { //entry does not start with !
-				if(entry.contains("(") && !entry.contains("&")) {
-					if(evaluate(entry)){
-						return true;
-					} else {
-						continue;
-					}
-				} else if(entry.contains("&")){
+				if(entry.contains("&")){
 					if(andProcess(entry)) {
 						//System.out.println("and process was true");
 						return true;
@@ -194,6 +199,12 @@ public class Learn {
 							return false;
 						}
 							
+					}
+				} else if(entry.contains("(")) {
+					if(evaluate(entry)){
+						return true;
+					} else {
+						continue;
 					}
 				} else if(Main.facts_known.contains(entry)){
 					// Known Fact

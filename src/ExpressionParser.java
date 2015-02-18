@@ -367,7 +367,7 @@ public class ExpressionParser {
 						//System.out.println("and process was FALSE");
 						return true;
 					}
-				} else if(entry.contains("(") && !entry.contains("&")) {
+				} else if(entry.contains("(")) {
 					if(evaluate(entry, whyFlag)){
 						why += falseExpression + "NOT " + stringifyRule(entry) + "\n";
 						continue;
@@ -415,13 +415,7 @@ public class ExpressionParser {
 					return true;
 				}
 			} else { //entry does not start with !
-				if(entry.contains("(") && !entry.contains("&")) {
-					if(evaluate(entry, whyFlag)){
-						return true;
-					} else {
-						continue;
-					}
-				} else if(entry.contains("&")){
+				if(entry.contains("&")){
 					if(andProcess(entry, whyFlag)) {
 						//System.out.println("and process was true");
 						return true;
@@ -435,6 +429,12 @@ public class ExpressionParser {
 							return false;
 						}
 							
+					}
+				} else if(entry.contains("(")) {
+					if(evaluate(entry, whyFlag)){
+						return true;
+					} else {
+						continue;
 					}
 				} else if(Main.facts_known.contains(entry)){
 					// Known Fact
