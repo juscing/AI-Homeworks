@@ -11,7 +11,7 @@ public class DistanceComparator implements Comparator<MapPoint> {
 	}
 	
 	private double score(MapPoint mp) {
-		return mp.distance(targetPoint) + mp.getBestDist();
+		return mp.distanceSq(targetPoint) + mp.getBestDist();
 	}
 	
 	@Override

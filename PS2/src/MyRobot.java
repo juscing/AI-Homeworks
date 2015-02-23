@@ -81,7 +81,7 @@ public class MyRobot extends Robot {
 						System.out.println("Already tried");
 						continue;
 					}
-					int tenative_score = (int) (next.getBestDist() + next.distance(neighborPoint));
+					int tenative_score = (int) (next.getBestDist() + next.distanceSq(neighborPoint));
 					System.out.println(tenative_score);
 					if(!openSet.contains(neighborPoint)) {
 						cameFrom.put(neighborPoint, next);
