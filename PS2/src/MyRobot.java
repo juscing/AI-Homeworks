@@ -25,7 +25,8 @@ public class MyRobot extends Robot {
 		super();
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
-		this.openSet = new PriorityQueue<MapPoint>(PQ_INIT_CAP, new DistanceComparator(endPosition));
+		this.openSet = new PriorityQueue<MapPoint>(PQ_INIT_CAP, 
+				new DistanceComparator(endPosition));
 		this.closedSet = new HashSet<MapPoint>();
 		this.cameFrom = new HashMap<MapPoint,MapPoint>();
 		this.xSize = x;
@@ -63,22 +64,21 @@ public class MyRobot extends Robot {
 				return;
 			}
 			closedSet.add(next);
+			if(!MapUtil.canMove(this.pingMap(next))) {
+				continue;
+			}
 			for(int x = -1; x <= 1; x++) {
 				for(int y = -1; y <= 1; y++){
 					MapPoint neighborPoint = new MapPoint(0);
 					neighborPoint.setLocation(x + next.x, y + next.y);
 					System.out.println(neighborPoint);
-					if(neighborPoint.x < 0 || neighborPoint.y < 0 || neighborPoint.x > xSize - 1 || neighborPoint.y > ySize - 1) {
+					if(neighborPoint.x < 0 || neighborPoint.y < 0 || neighborPoint.x > xSize - 1 
+							|| neighborPoint.y > ySize - 1) {
 						System.out.println("Out of bounds");
 						continue;
 					}
 					if(closedSet.contains(neighborPoint)) {
 						System.out.println("Already tried");
-						continue;
-					}
-					if(!openSet.contains(neighborPoint) && !MapUtil.canMove(this.pingMap(neighborPoint))) {
-						closedSet.add(neighborPoint);
-						System.out.println("Invalid spot");
 						continue;
 					}
 					int tenative_score = (int) (next.getBestDist() + next.distance(neighborPoint));
@@ -87,7 +87,8 @@ public class MyRobot extends Robot {
 						cameFrom.put(neighborPoint, next);
 						neighborPoint.setBestDist(tenative_score);
 						openSet.add(neighborPoint);
-					} else if(openSet.contains(neighborPoint) && tenative_score < neighborPoint.getBestDist()){
+					} else if(openSet.contains(neighborPoint) && tenative_score < 
+							neighborPoint.getBestDist()){
 						openSet.remove(neighborPoint);
 						neighborPoint.setBestDist(tenative_score);
 						cameFrom.put(neighborPoint, next);
@@ -102,7 +103,8 @@ public class MyRobot extends Robot {
 	public static void main(String[] args) {
 		try {
 			World myWorld = new World("worldFiles/simpleWorld.txt", false);
-			MyRobot hal9000 = new MyRobot(myWorld.getStartPos(), myWorld.getEndPos(), myWorld.numRows(), myWorld.numCols());
+			MyRobot hal9000 = new MyRobot(myWorld.getStartPos(), myWorld.getEndPos(), 
+					myWorld.numRows(), myWorld.numCols());
 			hal9000.addToWorld(myWorld);
 			System.out.println(hal9000.getPosition());
 			hal9000.travelToDestination();
