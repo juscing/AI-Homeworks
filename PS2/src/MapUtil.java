@@ -7,4 +7,8 @@ public class MapUtil {
 		return s.equals("O") || s.equals("S") || s.equals("F");
 	}
 	
+	public static boolean didMove(Point previous, Point current) {
+		return previous.x != current.x || previous.y != current.y;
+	}
+	
 }

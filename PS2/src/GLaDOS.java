@@ -8,7 +8,7 @@ import world.Robot;
 import world.World;
 
 
-public class HAL9000 extends Robot {
+public class GLaDOS extends Robot {
 	
 	public static final int PQ_INIT_CAP = 100;
 	
@@ -21,7 +21,7 @@ public class HAL9000 extends Robot {
 	HashMap<MapPoint,MapPoint> cameFrom;
 	PriorityQueue<MapPoint> openSet;
 	
-	public HAL9000(Point startPosition, Point endPosition, int x, int y) {
+	public GLaDOS(Point startPosition, Point endPosition, int x, int y) {
 		super();
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
@@ -60,7 +60,9 @@ public class HAL9000 extends Robot {
 					System.out.println(mp);
 					this.move(mp);
 				}
-				
+				System.out.println("Made it!");
+				System.out.println(this.getPosition());
+				System.out.println(this.endPosition);
 				return;
 			}
 			closedSet.add(next);
@@ -102,12 +104,13 @@ public class HAL9000 extends Robot {
 	
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/25x25_spiral.txt", true);
-			HAL9000 hal9000 = new HAL9000(myWorld.getStartPos(), myWorld.getEndPos(), 
+			World myWorld = new World("worldFiles/25x25_lines.txt", true);
+			GLaDOS glados = new GLaDOS(myWorld.getStartPos(), myWorld.getEndPos(), 
 					myWorld.numRows(), myWorld.numCols());
-			hal9000.addToWorld(myWorld);
-			System.out.println(hal9000.getPosition());
-			hal9000.travelToDestination();
+			glados.addToWorld(myWorld);
+			System.out.println(glados.getPosition());
+			System.out.println(myWorld.getEndPos());
+			glados.travelToDestination();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
