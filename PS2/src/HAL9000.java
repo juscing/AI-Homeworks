@@ -8,7 +8,7 @@ import world.Robot;
 import world.World;
 
 
-public class MyRobot extends Robot {
+public class HAL9000 extends Robot {
 	
 	public static final int PQ_INIT_CAP = 100;
 	
@@ -21,7 +21,7 @@ public class MyRobot extends Robot {
 	HashMap<MapPoint,MapPoint> cameFrom;
 	PriorityQueue<MapPoint> openSet;
 	
-	public MyRobot(Point startPosition, Point endPosition, int x, int y) {
+	public HAL9000(Point startPosition, Point endPosition, int x, int y) {
 		super();
 		this.startPosition = startPosition;
 		this.endPosition = endPosition;
@@ -102,8 +102,8 @@ public class MyRobot extends Robot {
 	
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/simpleWorld.txt", false);
-			MyRobot hal9000 = new MyRobot(myWorld.getStartPos(), myWorld.getEndPos(), 
+			World myWorld = new World("worldFiles/25x25_spiral.txt", false);
+			HAL9000 hal9000 = new HAL9000(myWorld.getStartPos(), myWorld.getEndPos(), 
 					myWorld.numRows(), myWorld.numCols());
 			hal9000.addToWorld(myWorld);
 			System.out.println(hal9000.getPosition());
