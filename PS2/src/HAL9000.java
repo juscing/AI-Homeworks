@@ -21,17 +21,22 @@ public class HAL9000 extends Robot {
 	HashMap<MapPoint,MapPoint> cameFrom;
 	PriorityQueue<MapPoint> openSet;
 	
-	public HAL9000(Point startPosition, Point endPosition, int x, int y) {
+	public HAL9000() {
 		super();
-		this.startPosition = startPosition;
-		this.endPosition = endPosition;
 		this.openSet = new PriorityQueue<MapPoint>(PQ_INIT_CAP, 
 				new DistanceComparator(endPosition));
 		this.closedSet = new HashSet<MapPoint>();
 		this.cameFrom = new HashMap<MapPoint,MapPoint>();
-		this.xSize = x;
-		this.ySize = y;
 		this.path = new LinkedList<MapPoint>();
+	}
+	
+	@Override
+	public void addToWorld(World world) {
+		super.addToWorld(world);
+		this.startPosition = world.getStartPos();
+		this.endPosition = world.getEndPos();
+		this.xSize = world.numRows();
+		this.ySize = world.numCols();
 	}
 	
 	@Override
@@ -103,8 +108,7 @@ public class HAL9000 extends Robot {
 	public static void main(String[] args) {
 		try {
 			World myWorld = new World("worldFiles/25x25_spiral.txt", true);
-			HAL9000 hal9000 = new HAL9000(myWorld.getStartPos(), myWorld.getEndPos(), 
-					myWorld.numRows(), myWorld.numCols());
+			HAL9000 hal9000 = new HAL9000();
 			hal9000.addToWorld(myWorld);
 			System.out.println(hal9000.getPosition());
 			hal9000.travelToDestination();

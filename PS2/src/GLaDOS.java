@@ -20,18 +20,24 @@ public class GLaDOS extends Robot {
 	HashSet<MapPoint> closedSet;
 	HashMap<MapPoint,MapPoint> cameFrom;
 	PriorityQueue<MapPoint> openSet;
+	double[] values = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10};
 	
 	public GLaDOS(Point startPosition, Point endPosition, int x, int y) {
 		super();
-		this.startPosition = startPosition;
-		this.endPosition = endPosition;
 		this.openSet = new PriorityQueue<MapPoint>(PQ_INIT_CAP, 
 				new DistanceComparator(endPosition));
 		this.closedSet = new HashSet<MapPoint>();
 		this.cameFrom = new HashMap<MapPoint,MapPoint>();
-		this.xSize = x;
-		this.ySize = y;
 		this.path = new LinkedList<MapPoint>();
+	}
+	
+	@Override
+	public void addToWorld(World world) {
+		super.addToWorld(world);
+		this.startPosition = world.getStartPos();
+		this.endPosition = world.getEndPos();
+		this.xSize = world.numRows();
+		this.ySize = world.numCols();
 	}
 	
 	@Override
