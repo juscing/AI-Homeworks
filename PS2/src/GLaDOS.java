@@ -1,4 +1,5 @@
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -10,25 +11,24 @@ import world.World;
 
 public class GLaDOS extends Robot {
 	
-	public static final int PQ_INIT_CAP = 100;
+	public static int PQ_INIT_CAP = 100;
+	public static final int PING_DEPTH = 5;
 	
-	LinkedList<MapPoint> path;
+	LinkedList<UncertainMapPoint> path;
 	Point startPosition;
 	Point endPosition;
-	int xSize;
-	int ySize;
-	HashSet<MapPoint> closedSet;
-	HashMap<MapPoint,MapPoint> cameFrom;
-	PriorityQueue<MapPoint> openSet;
+	int rows;
+	int cols;
+	HashSet<UncertainMapPoint> closedSet;
+	HashMap<UncertainMapPoint,UncertainMapPoint> cameFrom;
+	PriorityQueue<UncertainMapPoint> openSet;
 	double[] values = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10};
 	
 	public GLaDOS(Point startPosition, Point endPosition, int x, int y) {
 		super();
-		this.openSet = new PriorityQueue<MapPoint>(PQ_INIT_CAP, 
-				new DistanceComparator(endPosition));
-		this.closedSet = new HashSet<MapPoint>();
-		this.cameFrom = new HashMap<MapPoint,MapPoint>();
-		this.path = new LinkedList<MapPoint>();
+		this.closedSet = new HashSet<UncertainMapPoint>();
+		this.cameFrom = new HashMap<UncertainMapPoint,UncertainMapPoint>();
+		this.path = new LinkedList<UncertainMapPoint>();
 	}
 	
 	@Override
@@ -36,59 +36,37 @@ public class GLaDOS extends Robot {
 		super.addToWorld(world);
 		this.startPosition = world.getStartPos();
 		this.endPosition = world.getEndPos();
-		this.xSize = world.numRows();
-		this.ySize = world.numCols();
+		this.rows = world.numRows();
+		this.cols = world.numCols();
+		this.openSet = new PriorityQueue<UncertainMapPoint>(PQ_INIT_CAP,
+				new UncertainDistanceComparator(endPosition));
 	}
 	
 	@Override
 	public void travelToDestination() {
-		// This is going to roughly be A* totally planning not moving
-		MapPoint start = new MapPoint(0);
+		UncertainMapPoint start = new UncertainMapPoint(0);
 		start.setLocation(startPosition);
 		openSet.add(start);
 		cameFrom.put(start, start);
+		int plan_since_move = 0;
 		
 		while(!openSet.isEmpty()) {
-			MapPoint next = openSet.poll();
+			UncertainMapPoint next = openSet.poll();
 			System.out.println(next);
-			if(next.equals(endPosition)) {
-				// Made it!
+			
+			if(this.getPosition().distanceSq(next) > PING_DEPTH * PING_DEPTH) {
+				// Point we are evaluating is too far away!
 				
-				// Backtrack
-				while(!next.equals(start)) {
-					path.addFirst(next);
-					next = cameFrom.get(next);
-				}
 				
-				System.out.println("Move the bot");
-				System.out.println(start);
-				for(MapPoint mp : path) {
-					System.out.println(mp);
-					this.move(mp);
-				}
-				System.out.println("Made it!");
-				System.out.println(this.getPosition());
-				System.out.println(this.endPosition);
-				return;
+			} else if(next.equals(endPosition) || plan_since_move >= PING_DEPTH) {
+				// Complete the path planning... and start moving!
+				
+				
 			}
-			closedSet.add(next);
-			if(!MapUtil.canMove(this.pingMap(next))) {
+			// closedSet.add(next);
+			/* if(!MapUtil.canMove(this.pingMap(next))) {
 				continue;
-			}
-			for(int x = -1; x <= 1; x++) {
-				for(int y = -1; y <= 1; y++){
-					MapPoint neighborPoint = new MapPoint(0);
-					neighborPoint.setLocation(x + next.x, y + next.y);
-					System.out.println(neighborPoint);
-					if(neighborPoint.x < 0 || neighborPoint.y < 0 || neighborPoint.x > xSize - 1 
-							|| neighborPoint.y > ySize - 1) {
-						System.out.println("Out of bounds");
-						continue;
-					}
-					if(closedSet.contains(neighborPoint)) {
-						System.out.println("Already tried");
-						continue;
-					}
+			} */ 
 					int tenative_score = (int) (next.getBestDist() + next.distanceSq(neighborPoint));
 					System.out.println(tenative_score);
 					if(!openSet.contains(neighborPoint)) {
@@ -102,10 +80,72 @@ public class GLaDOS extends Robot {
 						cameFrom.put(neighborPoint, next);
 						openSet.add(neighborPoint);
 					}
-				}
-			}
 		}
 		System.out.println("No path possible");
+	}
+	
+	private ArrayList<UncertainMapPoint> getNeighbors(UncertainMapPoint ump) {
+		ArrayList<UncertainMapPoint> neighbors = new ArrayList<UncertainMapPoint>();
+		for(int x = -1; x <= 1; x++) {
+			for(int y = -1; y <= 1; y++){
+				UncertainMapPoint neighborPoint = new UncertainMapPoint(0);
+				neighborPoint.setLocation(x + ump.x, y + ump.y);
+				if(neighborPoint.x < 0 || neighborPoint.y < 0 || neighborPoint.x > rows - 1 
+						|| neighborPoint.y > cols - 1) {
+					System.out.println("Out of bounds");
+					continue;
+				}
+				if(closedSet.contains(neighborPoint)) {
+					System.out.println("Already tried");
+					continue;
+				}
+				neighbors.add(neighborPoint);
+			}
+		}
+		return neighbors;
+	}
+	
+	private void generate_path(UncertainMapPoint ump) {
+		while(!ump.equals(this.startPosition)) {
+			path.addFirst(ump);
+			ump = cameFrom.get(ump);
+		}
+		System.out.println("MADE IT");
+		System.out.println("The path the bot discovered:");
+		System.out.println(this.startPosition);
+		for(UncertainMapPoint mp : path) {
+			System.out.println(mp);
+		}
+		return;
+	}
+	
+	private int move_proc(UncertainMapPoint target) {
+		// I LIKE TO MOVE IT MOVE IT
+		int successful_moves = 0;
+		LinkedList<UncertainMapPoint> temp_path = new LinkedList<UncertainMapPoint>();
+		// Backtrack
+		while(!target.equals(this.getPosition())) {
+			temp_path.addFirst(target);
+			target = cameFrom.get(target);
+		}
+		
+		System.out.println("Move the bot");
+		System.out.println(this.getPosition());
+		for(UncertainMapPoint mp : temp_path) {
+			System.out.println(mp);
+			if(mp.equals(this.endPosition)) {
+				this.generate_path(mp);
+			}
+			Point p = this.move(mp);
+			if(mp.equals(p)) {
+				// Robot Moved!
+				successful_moves++;
+			} else {
+				// Robot hit wall
+				break;
+			}
+		}
+		return successful_moves;
 	}
 	
 	public static void main(String[] args) {
