@@ -5,7 +5,6 @@ import java.util.Comparator;
 public class UncertainDistanceComparator implements Comparator<UncertainMapPoint> {
 
 	Point targetPoint;
-	double[] values = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10};
 	
 	public UncertainDistanceComparator(Point targetPoint) {
 		this.targetPoint = targetPoint;
@@ -13,9 +12,9 @@ public class UncertainDistanceComparator implements Comparator<UncertainMapPoint
 	
 	private double score(UncertainMapPoint mp) {
 		// Normal score
-		double score = mp.distanceSq(targetPoint) + mp.getBestDist();
+		double score = mp.distanceSq(targetPoint) * 10 + mp.getBestDist();
 		// Mods
-		
+		//score = score - mp.getOpenNeighbors();
 		return score;
 	}
 	

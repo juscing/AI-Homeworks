@@ -7,18 +7,30 @@ public class UncertainMapPoint extends Point {
 	private int bestDist;
 	private boolean moveable;
 	private int pingDist;
+	private int openNeighbors;
 	
 	public UncertainMapPoint(int bestDist) {
 		this.bestDist = bestDist;
 		this.moveable = true;
 		this.pingDist = Integer.MAX_VALUE;
+		this.openNeighbors = 0;
 	}
 	
-	public void setMoveable(boolean val, int distance) {
+	public boolean setMoveable(boolean val, int distance) {
 		if(distance < pingDist) {
 			this.moveable = val;
 			this.pingDist = distance;
+			return true;
 		}
+		return false;
+	}
+	
+	public int getOpenNeighbors() {
+		return this.openNeighbors;
+	}
+	
+	public void setOpenNeighbors(int neighbors) {
+		this.openNeighbors = neighbors;
 	}
 	
 	public boolean getMoveable() {
