@@ -11,8 +11,8 @@ import world.World;
 
 public class GLaDOS extends Robot {
 	
-	public static int PQ_INIT_CAP = 100;
-	public static final int PING_DEPTH = 5;
+	public static final int PQ_INIT_CAP = 100;
+	public static int PING_DEPTH = 5;
 	
 	LinkedList<UncertainMapPoint> path;
 	Point startPosition;
@@ -22,9 +22,10 @@ public class GLaDOS extends Robot {
 	HashSet<UncertainMapPoint> closedSet;
 	HashMap<UncertainMapPoint,UncertainMapPoint> cameFrom;
 	PriorityQueue<UncertainMapPoint> openSet;
-	double[] values = {100, 90, 80, 70, 60, 50, 40, 30, 20, 10};
+	UncertainMapPoint[][] map;
 	
-	public GLaDOS(Point startPosition, Point endPosition, int x, int y) {
+	
+	public GLaDOS() {
 		super();
 		this.closedSet = new HashSet<UncertainMapPoint>();
 		this.cameFrom = new HashMap<UncertainMapPoint,UncertainMapPoint>();
@@ -40,6 +41,7 @@ public class GLaDOS extends Robot {
 		this.cols = world.numCols();
 		this.openSet = new PriorityQueue<UncertainMapPoint>(PQ_INIT_CAP,
 				new UncertainDistanceComparator(endPosition));
+		this.map = new UncertainMapPoint[this.rows][this.cols];
 	}
 	
 	@Override
@@ -48,38 +50,49 @@ public class GLaDOS extends Robot {
 		start.setLocation(startPosition);
 		openSet.add(start);
 		cameFrom.put(start, start);
+		map[start.x][start.y] = start;
 		int plan_since_move = 0;
-		
 		while(!openSet.isEmpty()) {
 			UncertainMapPoint next = openSet.poll();
 			System.out.println(next);
-			
-			if(this.getPosition().distanceSq(next) > PING_DEPTH * PING_DEPTH) {
-				// Point we are evaluating is too far away!
-				
-				
-			} else if(next.equals(endPosition) || plan_since_move >= PING_DEPTH) {
+			double distance = this.getPosition().distance(next);
+			if(next.equals(endPosition) || plan_since_move >= PING_DEPTH) {
 				// Complete the path planning... and start moving!
-				
-				
+				int successful = this.move_proc(next);
+				if(successful >= PING_DEPTH) {
+					PING_DEPTH++;
+				} else {
+					PING_DEPTH--;
+				}
+			} else if(distance > PING_DEPTH) {
+				// Point that came out is too far away!
+				this.move_proc(next);
+				plan_since_move = 0;
 			}
-			// closedSet.add(next);
-			/* if(!MapUtil.canMove(this.pingMap(next))) {
-				continue;
-			} */ 
-					int tenative_score = (int) (next.getBestDist() + next.distanceSq(neighborPoint));
-					System.out.println(tenative_score);
-					if(!openSet.contains(neighborPoint)) {
-						cameFrom.put(neighborPoint, next);
-						neighborPoint.setBestDist(tenative_score);
-						openSet.add(neighborPoint);
-					} else if(openSet.contains(neighborPoint) && tenative_score < 
-							neighborPoint.getBestDist()){
-						openSet.remove(neighborPoint);
-						neighborPoint.setBestDist(tenative_score);
-						cameFrom.put(neighborPoint, next);
-						openSet.add(neighborPoint);
-					}
+			if(MapUtil.canMove(this.pingMap(next))) {
+				next.setMoveable(true, (int) distance);
+			} else {
+				next.setMoveable(false, (int) distance);
+			}
+			closedSet.add(next);
+			ArrayList<UncertainMapPoint> neighbors = this.getNeighbors(next);
+			for(UncertainMapPoint neighborPoint : neighbors) {
+				int tenative_score = (int) (next.getBestDist() + next.distanceSq(neighborPoint));
+				if(!openSet.contains(neighborPoint)) {
+					cameFrom.put(neighborPoint, next);
+					neighborPoint.setBestDist(tenative_score);
+					openSet.add(neighborPoint);
+				} else if(openSet.contains(neighborPoint) && tenative_score < 
+					neighborPoint.getBestDist()){
+					openSet.remove(neighborPoint);
+					neighborPoint.setBestDist(tenative_score);
+					cameFrom.put(neighborPoint, next);
+					openSet.add(neighborPoint);
+				}
+			}
+			
+			
+			
 		}
 		System.out.println("No path possible");
 	}
@@ -99,7 +112,15 @@ public class GLaDOS extends Robot {
 					System.out.println("Already tried");
 					continue;
 				}
+				double distance = this.getPosition().distance(neighborPoint);
+				if(map[neighborPoint.x][neighborPoint.y] == null) {
+					neighborPoint.setMoveable(MapUtil.canMove(this.pingMap(neighborPoint)), (int) distance);
+				} else {
+					map[neighborPoint.x][neighborPoint.y].setMoveable(
+							MapUtil.canMove(this.pingMap(neighborPoint)), (int) distance);
+				}
 				neighbors.add(neighborPoint);
+				map[neighborPoint.x][neighborPoint.y] = neighborPoint;
 			}
 		}
 		return neighbors;
@@ -139,9 +160,15 @@ public class GLaDOS extends Robot {
 			Point p = this.move(mp);
 			if(mp.equals(p)) {
 				// Robot Moved!
+				if(map[mp.x][mp.y] != null) {
+					map[mp.x][mp.y].setMoveable(true, 0);
+				}
 				successful_moves++;
 			} else {
 				// Robot hit wall
+				if(map[mp.x][mp.y] != null) {
+					map[mp.x][mp.y].setMoveable(false, 0);
+				}
 				break;
 			}
 		}
@@ -150,9 +177,8 @@ public class GLaDOS extends Robot {
 	
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/25x25_lines.txt", true);
-			GLaDOS glados = new GLaDOS(myWorld.getStartPos(), myWorld.getEndPos(), 
-					myWorld.numRows(), myWorld.numCols());
+			World myWorld = new World("worldFiles/simpleWorld.txt", true);
+			GLaDOS glados = new GLaDOS();
 			glados.addToWorld(myWorld);
 			System.out.println(glados.getPosition());
 			System.out.println(myWorld.getEndPos());

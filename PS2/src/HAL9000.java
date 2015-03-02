@@ -107,7 +107,7 @@ public class HAL9000 extends Robot {
 	
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/simpleWorld.txt", false);
+			World myWorld = new World("worldFiles/optimalTest.txt", false);
 			HAL9000 hal9000 = new HAL9000();
 			hal9000.addToWorld(myWorld);
 			System.out.println(hal9000.getPosition());
