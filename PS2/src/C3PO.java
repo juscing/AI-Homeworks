@@ -43,6 +43,11 @@ public class C3PO extends Robot {
 		this.cols = world.numCols();
 		map = new Boolean[this.rows][this.cols];
 		prob = new Integer[this.rows][this.cols];
+		for(Integer[] i: prob) {
+			for(Integer j: i) {
+				j = Integer.MAX_VALUE;
+			}
+		}
 		this.openSet = new PriorityQueue<MapPoint>(PQ_INIT_CAP, 
 				new DistanceComparator(endPosition));
 	}
@@ -59,10 +64,14 @@ public class C3PO extends Robot {
 			MapPoint next = openSet.poll();
 			System.out.println(next);
 			closedSet.add(next);
-			if(!MapUtil.canMove(this.pingMap(next))) {
+			int distance = (int) this.getPosition().distance(next);
+			if(map[next.x][next.y] != null && !map[next.x][next.y] && prob[next.x][next.y] < PING_DEPTH) {
+				continue;
+			}else if(!MapUtil.canMove(this.pingMap(next))) {
+				map[next.x][next.y] = false;
+				prob[next.x][next.y] = distance;
 				continue;
 			}
-			double distance = this.getPosition().distance(next);
 			if(distance >= PING_DEPTH || next.equals(endPosition)) {
 				// Point that came out is too far away!
 				System.out.println("Enough planning!");
@@ -88,6 +97,11 @@ public class C3PO extends Robot {
 							|| neighborPoint.y > cols - 1) {
 						//System.out.println("Out of bounds");
 						continue;
+					}
+					if(map[neighborPoint.x][neighborPoint.y] != null) {
+						if(!map[neighborPoint.x][neighborPoint.y] && prob[neighborPoint.x][neighborPoint.y] < PING_DEPTH) {
+							continue;
+						}
 					}
 					if(closedSet.contains(neighborPoint)) {
 						//System.out.println("Already tried");
@@ -156,12 +170,12 @@ public class C3PO extends Robot {
 				System.out.println("successful move");
 				path.add(mp);
 				map[mp.x][mp.y] = true;
-				prob[mp.x][mp.y] = 100;
+				prob[mp.x][mp.y] = 0;
 				successful_moves++;
 			} else {
 				System.out.println("Robot hit wall");
 				map[mp.x][mp.y] = false;
-				prob[mp.x][mp.y] = 100;
+				prob[mp.x][mp.y] = 0;
 				openSet.clear();
 				closedSet.clear();
 				cameFrom.clear();
@@ -179,7 +193,7 @@ public class C3PO extends Robot {
 	
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/simpleWorld.txt", true);
+			World myWorld = new World("worldFiles/25x25_lines.txt", true);
 			C3PO rosie = new C3PO();
 			rosie.addToWorld(myWorld);
 			System.out.println(rosie.getPosition());
