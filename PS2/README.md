@@ -16,14 +16,10 @@ See REPORT.md for the required report.
 * Starting with a function and tweaking it as you go
 * Goodness of a point is the average of the n points around it
 
-## Robot name ideas
-* Hal9000
-* Jarvis
-* TARS
-* GLaDOS
-* Sonny
-* Rosey
-* Wall-E
 
 ## Robot functionality
 * HAL9000 - Strictly planning
+* Rosie
+* C3PO
+* WallE - planning repeatedly
+* Sonny - constant moving and edge hugging
