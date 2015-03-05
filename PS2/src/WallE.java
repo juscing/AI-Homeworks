@@ -176,15 +176,15 @@ public class WallE extends Robot {
 
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/simpleWorld.txt", true);
+			World myWorld = new World("worldFiles/25x25_wall.txt", true);
 			WallE walle = new WallE();
 			walle.addToWorld(myWorld);
-			for(int c=0; c<5; c++){
-				System.out.println("TRYING TO FIND PATH: " + (c+1));
+			int c = 1;
+			while(complete != 1){
+				System.out.println("TRYING TO FIND PATH: " + c);
 				walle.planPath();
 				walle.travelToDestination();
-				if(complete == 1)
-					break;
+				c++;
 			}
 			System.out.println("No path found.");
 		} catch(Exception e) {

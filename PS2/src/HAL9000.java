@@ -44,12 +44,17 @@ public class HAL9000 extends Robot {
 		// This is going to roughly be A* totally planning not moving
 		MapPoint start = new MapPoint(0);
 		start.setLocation(startPosition);
+		System.out.println("START POSITION: "+start);
+		MapPoint end = new MapPoint(0);
+		end.setLocation(endPosition);
+		System.out.println("END POSITION: "+end);
+		
 		openSet.add(start);
 		cameFrom.put(start, start);
 		
 		while(!openSet.isEmpty()) {
 			MapPoint next = openSet.poll();
-			System.out.println(next);
+			//System.out.println(next);
 			if(next.equals(endPosition)) {
 				// Made it!
 				
@@ -59,7 +64,7 @@ public class HAL9000 extends Robot {
 					next = cameFrom.get(next);
 				}
 				
-				System.out.println("Move the bot");
+				//System.out.println("Move the bot");
 				System.out.println(start);
 				for(MapPoint mp : path) {
 					System.out.println(mp);
@@ -76,18 +81,18 @@ public class HAL9000 extends Robot {
 				for(int y = -1; y <= 1; y++){
 					MapPoint neighborPoint = new MapPoint(0);
 					neighborPoint.setLocation(x + next.x, y + next.y);
-					System.out.println(neighborPoint);
+					//System.out.println(neighborPoint);
 					if(neighborPoint.x < 0 || neighborPoint.y < 0 || neighborPoint.x > rows - 1 
 							|| neighborPoint.y > cols - 1) {
-						System.out.println("Out of bounds");
+						//System.out.println("Out of bounds");
 						continue;
 					}
 					if(closedSet.contains(neighborPoint)) {
-						System.out.println("Already tried");
+						//System.out.println("Already tried");
 						continue;
 					}
 					int tenative_score = (int) (next.getBestDist() + next.distanceSq(neighborPoint));
-					System.out.println(tenative_score);
+					//System.out.println(tenative_score);
 					if(!openSet.contains(neighborPoint)) {
 						cameFrom.put(neighborPoint, next);
 						neighborPoint.setBestDist(tenative_score);
@@ -107,7 +112,7 @@ public class HAL9000 extends Robot {
 	
 	public static void main(String[] args) {
 		try {
-			World myWorld = new World("worldFiles/optimalTest.txt", false);
+			World myWorld = new World("worldFiles/25x25_wall.txt", false);
 			HAL9000 hal9000 = new HAL9000();
 			hal9000.addToWorld(myWorld);
 			System.out.println(hal9000.getPosition());
