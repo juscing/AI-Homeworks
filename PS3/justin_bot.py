@@ -7,7 +7,7 @@ class JustinBot(BaseNegotiator):
         self.enemy_utility_history = []
         self.my_utility_history = []
         self.enemy_offer_history = []
-        self.my_offer_history
+        self.my_offer_history = []
         self.results = []
         self.goingFirst = None
 
@@ -26,7 +26,14 @@ class JustinBot(BaseNegotiator):
     def make_offer(self, offer):
         if offer:
             self.enemy_offer_history.append(offer)
-        # Was going to try to figure out going first/second here, but there is a big debate on the forums about it.
+            if self.goingFirst is None:
+                self.goingFirst = False
+                print("I'm not going first!")
+        else:
+            if self.goingFirst is None:
+                self.goingFirst = True
+                print("I'm going first!")
+
 
     def utility(self):
         utility = super().utility()
@@ -41,6 +48,7 @@ class JustinBot(BaseNegotiator):
     # receive_results(self : BaseNegotiator, results : (Boolean, Float, Float, Int))
         # Store the results of the last series of negotiation (points won, success, etc.)
     def receive_results(self, results):
+        #Always from the same opponent
         self.results.append(results)
 
     def total_score(self):
