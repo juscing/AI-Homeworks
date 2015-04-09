@@ -8,16 +8,39 @@ class JustinBot(BaseNegotiator):
 
     def __init__(self):
         super().__init__()
-        self.enemy_utility_history = []
-        self.our_utility_history = []
-        self.enemy_offer_history = []
+        # History of offers
         self.our_offer_history = []
-        self.goingFirst = None
-        self.turnsTaken = 0
+        self.enemy_offer_history = []
+
+        # The enemy's best offer so far
+        self.enemy_max_offer = []
+
+        # Utility Histories
+        # How much we will get from our own offers
+        self.our_offer_utility_history = []
+        # How much the enemy would get from our own offer, scaled to be directly comparable
+        self.our_offer_enemy_utility_history = []
+        # Incoming, randomly scaled utility of enemy's offers
+        self.enemy_offer_rawutility_history = []
+        # What we expect the enemy to get from their offer, scaled to be comparable to our utilities
+        self.enemy_utility_from_enemy_offer_history = []
+        # What we expect to get from the enemy's offer
+        self.our_utility_from_enemy_offer_history = []
+
+        # The actual results (WIN, NUM TURNS)
+        self.resultHistory = []
+
+        # Score history
         self.ourScoreHistory = []
         self.enemyScoreHistory = []
-        self.resultHistory = []
+
+        # Numerical items
+        self.turnsTaken = 0
         self.max_utility = 0
+        self.enemy_max_utility = 0
+        self.our_preferences_on_enemy_scale = 0
+
+        self.goingFirst = None
 
     # initialize(self : BaseNegotiator, preferences : list(String), iter_limit : Int)
         # Performs per-round initialization - takes in a list of items, ordered by the item's
@@ -25,11 +48,26 @@ class JustinBot(BaseNegotiator):
         # You can do other work here, but still need to store the preferences
     def initialize(self, preferences, iter_limit):
         super().initialize(preferences,iter_limit)
-        print(self.preferences)
+        print("Our preferences " + str(self.preferences))
+        # Reset all our fields that do not carry over from the past run
         self.goingFirst = None
         self.turnsTaken = 0
-        self.enemy_utility_history.clear()
-        self.our_utility_history.clear()
+        # Offer histories
+        self.enemy_offer_history.clear()
+        self.our_offer_history.clear()
+
+        #Utility histories
+        self.our_offer_utility_history.clear()
+        self.our_offer_enemy_utility_history.clear()
+        self.enemy_offer_rawutility_history.clear()
+        self.enemy_utility_from_enemy_offer_history.clear()
+        self.our_utility_from_enemy_offer_history.clear()
+
+        self.enemy_max_utility = 0
+        self.our_preferences_on_enemy_scale = 0
+        self.enemy_max_offer.clear()
+
+        # Set our max utility to be the value of the preference utility
         self.max_utility = self.calculate_offer_utility(preferences)
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
@@ -53,9 +91,27 @@ class JustinBot(BaseNegotiator):
         an offer permuter function
         multiple ways for us to get same utility... we should try several?
         """
-        print(self.turnsTaken)
+
+        ### All the calculations up here
+        print("Turn #" + str(self.turnsTaken))
         if offer:
+            print("Enemy offer: " + str(offer))
             self.enemy_offer_history.append(offer)
+            print(self.enemy_offer_rawutility_history[-1])
+            if self.enemy_offer_rawutility_history[-1] > self.enemy_max_utility:
+                print("This is the new best guess for their preferences!")
+                self.enemy_max_utility = self.enemy_offer_rawutility_history[-1]
+                print("Reported Raw Utility" + str(self.enemy_max_utility))
+                # recalculate...
+                self.enemy_max_offer = offer[:]
+                # Our preferences on the enemy's estimated scale
+                self.our_preferences_on_enemy_scale = self.calculate_our_offer_on_enemy_scale(self.preferences)
+
+            # Now that we have reset the best estimate
+            # Get our utility from this offer
+            self.our_utility_from_enemy_offer_history.append(self.calculate_offer_utility(offer))
+            print("Our utility from enemy's offer: " + str(self.our_utility_from_enemy_offer_history[-1]))
+
             if self.goingFirst is None:
                 self.goingFirst = False
                 print("I'm not going first!")
@@ -64,10 +120,17 @@ class JustinBot(BaseNegotiator):
                 self.goingFirst = True
                 print("I'm going first!")
 
+
+        ### Decision to accept reject in here
+
+
+
+
+        ### Making offers below here ###
+
         # Let's always begin by making our ideal offer
         if self.turnsTaken == 0:
             self.offer = self.preferences[:]
-
         else:
             self.offer = self.generate_offer(1-((1+self.turnsTaken)*0.05),1-(self.turnsTaken*0.05))
 
@@ -96,8 +159,8 @@ class JustinBot(BaseNegotiator):
         # turns taken increases
         self.turnsTaken += 1
         # store the utility of the offer we are making
-        self.our_utility_history.append(self.utility())
-        print("Offer utility " + str(self.our_utility_history[-1]))
+        # self.our_utility_history.append(self.utility())
+        # print("Offer utility " + str(self.our_utility_history[-1]))
         # return the offer
         return self.offer
 
@@ -131,10 +194,23 @@ class JustinBot(BaseNegotiator):
         self.offer = backup[:]
         return utility
 
+    def calculate_our_offer_on_enemy_scale(self, offer):
+        backuppref = self.preferences[:]
+        self.preferences = self.enemy_max_offer[:]
+        backup = self.offer[:]
+        self.offer = offer
+        utility = self.utility()
+        self.offer = backup[:]
+        self.preferences = backuppref[:]
+        return utility
+
+    def convert_enemy_scaled_to_utility(self, ordering):
+        pass
+
     # receive_utility(self : BaseNegotiator, utility : Float)
         # Store the utility the other negotiator received from their last offer
     def receive_utility(self, utility):
-        self.enemy_utility_history.append(utility)
+        self.enemy_offer_rawutility_history.append(utility)
 
     # receive_results(self : BaseNegotiator, results : (Boolean, Float, Float, Int))
         # Store the results of the last series of negotiation (points won, success, etc.)
