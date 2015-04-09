@@ -24,12 +24,20 @@ class JustinBot(BaseNegotiator):
         self.goingFirst = None
         self.turnsTaken = 0
         self.enemy_utility_history.clear()
+        self.our_utility_history.clear()
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
         # Given the opposing negotiator's last offer (represented as an ordered list),
         # return a new offer. If you wish to accept an offer & end negotiations, return the same offer
         # Note: Store a copy of whatever offer you make in self.offer at the end of this method.
     def make_offer(self, offer):
+        """
+        Offer making strategies
+        how much utility they give up before making a deal
+        how many turns before they make a deal
+        what is the lowest % of original utility before we give in?
+        never make a concession unless they do
+        """
         print(self.turnsTaken)
         if offer:
             self.enemy_offer_history.append(offer)
@@ -45,8 +53,8 @@ class JustinBot(BaseNegotiator):
         if self.turnsTaken == 0:
             self.offer = self.preferences[:]
 
-
-        acceptOffer = None
+        #Lets assume we are not going to accept the offer first
+        acceptOffer = False
 
         # If the offer for them is better for them than their last offer, reject it
 
@@ -61,6 +69,9 @@ class JustinBot(BaseNegotiator):
         if self.goingFirst and self.turnsTaken == self.iter_limit:
             print("decision on last offer!")
             pass
+
+        if acceptOffer:
+            self.offer = offer[:]
 
         # store our offer history
         self.our_offer_history.append(self.offer)
