@@ -1,0 +1,36 @@
+Possible Bot Characteristics:
+---------------------------
+To learn from experience:
+	- Go till the end on the first round if possible to find their end condition - for first round hold 
+		out to the end, be the most stubborn, maybe they will learn to accommodate me
+	- Figuring out what their lower bound is 
+	- in how many turns they will accept
+---------------------------
+General Rules
+	- Never make concessions if they don’t - if go first restate offer on second turn - if second they 
+		will be the one to make next offer
+	- Adjust acceptance threshold based on past - if got 80% last time then demand 85% - never go bellow 50%
+---------------------------
+To put forth list:
+	○ Run the utility function against every possible ordering of list and store it
+	○ Order list in greatest utility to least
+	○ Put forth offers in that order
+	---------------------------
+	○ Have function to randomly generate offers, run utility
+	○ Put forth list if at a certain percentage - if exceed iteration threshold lower the percentage
+----------------------------
+Acceptance
+	- If offer is within 95%  take it
+	- If offer worse than 50% of max never take it
+	- Don't change rules even if last offer
+-------------------------------------------------
+Bot1
+	- put forth ideal list first, assume they do the same
+	- if rejected: determine what their utility is on our ideal, set this as minimum utility for them
+	- Use random list generator - generate between certain percentages
+		- start at 100-95, try to find list organization in that range that has a higher utility than
+			their min
+		- have to put cap on iteration, then move on to next bracket down (95-90)
+---------------------
+	• Random first offer to break other bot
+	• Don't want to let the other negotiator know what I really want - maybe steal strategy from poker
