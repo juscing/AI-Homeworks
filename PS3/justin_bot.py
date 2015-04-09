@@ -68,6 +68,9 @@ class JustinBot(BaseNegotiator):
         if self.turnsTaken == 0:
             self.offer = self.preferences[:]
 
+        else:
+            self.offer = self.generate_offer(1-((1+self.turnsTaken)*0.05),1-(self.turnsTaken*0.05))
+
         #Lets assume we are not going to accept the offer first
         acceptOffer = False
 
@@ -94,6 +97,7 @@ class JustinBot(BaseNegotiator):
         self.turnsTaken += 1
         # store the utility of the offer we are making
         self.our_utility_history.append(self.utility())
+        print("Offer utility " + str(self.our_utility_history[-1]))
         # return the offer
         return self.offer
 
