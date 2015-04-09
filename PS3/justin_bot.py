@@ -1,7 +1,11 @@
+from random import shuffle
 from negotiator_base import BaseNegotiator
 
 
 class JustinBot(BaseNegotiator):
+
+    iteration_limit = 500
+
     def __init__(self):
         super().__init__()
         self.enemy_utility_history = []
@@ -13,6 +17,7 @@ class JustinBot(BaseNegotiator):
         self.ourScoreHistory = []
         self.enemyScoreHistory = []
         self.resultHistory = []
+        self.max_utility = 0
 
     # initialize(self : BaseNegotiator, preferences : list(String), iter_limit : Int)
         # Performs per-round initialization - takes in a list of items, ordered by the item's
@@ -25,6 +30,7 @@ class JustinBot(BaseNegotiator):
         self.turnsTaken = 0
         self.enemy_utility_history.clear()
         self.our_utility_history.clear()
+        self.max_utility = self.calculate_offer_utility(preferences)
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
         # Given the opposing negotiator's last offer (represented as an ordered list),
@@ -37,6 +43,15 @@ class JustinBot(BaseNegotiator):
         how many turns before they make a deal
         what is the lowest % of original utility before we give in?
         never make a concession unless they do
+        assume first offer is preferences...
+        give a random first offer?
+        """
+
+        """
+        What we need
+        proportion function
+        an offer permuter function
+        multiple ways for us to get same utility... we should try several?
         """
         print(self.turnsTaken)
         if offer:
@@ -77,12 +92,39 @@ class JustinBot(BaseNegotiator):
         self.our_offer_history.append(self.offer)
         # turns taken increases
         self.turnsTaken += 1
+        # store the utility of the offer we are making
+        self.our_utility_history.append(self.utility())
         # return the offer
         return self.offer
 
-    def utility(self):
-        utility = super().utility()
-        self.our_utility_history.append(utility)
+    def generate_offer(self, lowpercent, highpercent):
+        #higher bound is not flexible... lower bound is
+        i = 0
+        # copy the preferences
+        ordering = self.preferences[:]
+        while i < JustinBot.iteration_limit:
+            # lets get a new ordering
+            shuffle(ordering)
+            #calculate its utility
+            utility = self.calculate_offer_utility(ordering)
+            # is it above the threshold?
+            if lowpercent <= utility / self.max_utility <= highpercent:
+                return ordering
+            i+=1
+
+        # we failed to generate one in the number of iterations specified...
+        if lowpercent - 0.05 > 0:
+            return self.generate_offer(lowpercent - 0.05, highpercent)
+        elif highpercent + 0.05 < 1:
+            return self.generate_offer(lowpercent, highpercent + 0.05)
+        else:
+            print("This should never happen, and you just screwed up")
+
+    def calculate_offer_utility(self, offer):
+        backup = self.offer[:]
+        self.offer = offer
+        utility = self.utility()
+        self.offer = backup[:]
         return utility
 
     # receive_utility(self : BaseNegotiator, utility : Float)
