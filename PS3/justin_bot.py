@@ -63,7 +63,7 @@ class JustinBot(BaseNegotiator):
         self.enemy_utility_from_enemy_offer_history.clear()
         self.our_utility_from_enemy_offer_history.clear()
 
-        self.enemy_max_utility = 0
+        self.enemy_max_utility = float("-inf")
         self.our_preferences_on_enemy_scale = 0
         self.enemy_max_offer.clear()
 
@@ -97,20 +97,37 @@ class JustinBot(BaseNegotiator):
         if offer:
             print("Enemy offer: " + str(offer))
             self.enemy_offer_history.append(offer)
-            print(self.enemy_offer_rawutility_history[-1])
+
+            print("Reported utility for this offer " + str(self.enemy_offer_rawutility_history[-1]))
+
             if self.enemy_offer_rawutility_history[-1] > self.enemy_max_utility:
                 print("This is the new best guess for their preferences!")
                 self.enemy_max_utility = self.enemy_offer_rawutility_history[-1]
-                print("Reported Raw Utility" + str(self.enemy_max_utility))
+
+                print("New max enemy utility is " + str(self.enemy_max_utility))
+
                 # recalculate...
                 self.enemy_max_offer = offer[:]
+
                 # Our preferences on the enemy's estimated scale
                 self.our_preferences_on_enemy_scale = self.calculate_our_offer_on_enemy_scale(self.preferences)
+                print("Our preferences on the enemy's estimated utility: " + str(self.our_preferences_on_enemy_scale))
+
+                # Previous offers now based on this new preferred ordering
+                print("Recalculating previous utility estimates")
+                self.enemy_utility_from_enemy_offer_history.clear()
+                for ordering in self.enemy_utility_from_enemy_offer_history:
+                    self.enemy_utility_from_enemy_offer_history.append(self.calculate_our_offer_on_enemy_scale(offer))
+                print(self.enemy_utility_from_enemy_offer_history)
 
             # Now that we have reset the best estimate
             # Get our utility from this offer
             self.our_utility_from_enemy_offer_history.append(self.calculate_offer_utility(offer))
             print("Our utility from enemy's offer: " + str(self.our_utility_from_enemy_offer_history[-1]))
+
+            # Estimate enemy's utility from the offer
+            self.enemy_utility_from_enemy_offer_history.append(self.calculate_our_offer_on_enemy_scale(offer))
+            print("Estimated utility enemy receives from their offer: " + str(self.enemy_utility_from_enemy_offer_history[-1]))
 
             if self.goingFirst is None:
                 self.goingFirst = False
@@ -123,44 +140,64 @@ class JustinBot(BaseNegotiator):
 
         ### Decision to accept reject in here
 
-
-
-
-        ### Making offers below here ###
-
-        # Let's always begin by making our ideal offer
-        if self.turnsTaken == 0:
-            self.offer = self.preferences[:]
-        else:
-            self.offer = self.generate_offer(1-((1+self.turnsTaken)*0.05),1-(self.turnsTaken*0.05))
-
         #Lets assume we are not going to accept the offer first
         acceptOffer = False
+
+        # Because if there is no offer, there is no point to do this...
+        if(offer):
+
+            # If we go first, and this is the last turn, we can decide whether or not to accept the final offer
+            if self.goingFirst and self.turnsTaken == self.iter_limit:
+                print("decision on last offer!")
+
+            # If we think that our utility is higher than theirs for this offer... accept
+            if self.our_utility_from_enemy_offer_history[-1] > self.enemy_utility_from_enemy_offer_history[-1]:
+                acceptOffer = True
+
+
+        ### Making Offers ###
+
+        # Only make an offer if we are not accepting
+        if not acceptOffer:
+            # Let's always begin by making our ideal offer
+            if self.turnsTaken == 0:
+                self.offer = self.preferences[:]
+            else:
+                self.offer = self.generate_offer(1-((1+self.turnsTaken)*0.05),1-(self.turnsTaken*0.05))
+
+             # This is the last offer!! Person going first has to choose whether to accept or not
+            if not self.goingFirst and self.turnsTaken == self.iter_limit - 1:
+                print("make last offer!")
+
+
+            ####### Storing the history of the offer we have decided to make #######
+
+            # store our offer history
+            self.our_offer_history.append(self.offer)
+
+            # store the utility of the offer we are making
+            self.our_offer_utility_history.append(self.utility())
+            print("Offer utility " + str(self.our_offer_utility_history[-1]))
+
+        else:
+            ####### We decided to accept the offer #######
+            self.offer = offer[:]
+
+
+
 
         # If the offer for them is better for them than their last offer, reject it
 
         # Only make concessions if the other guy makes concessions
 
-        # This is the last offer!! Person going first has to choose whether to accept or not
-        if not self.goingFirst and self.turnsTaken == self.iter_limit - 1:
-            print("make last offer!")
-            pass
 
-        # If we go first, and this is the last turn, we can decide whether or not to accept the final offer
-        if self.goingFirst and self.turnsTaken == self.iter_limit:
-            print("decision on last offer!")
-            pass
 
-        if acceptOffer:
-            self.offer = offer[:]
 
-        # store our offer history
-        self.our_offer_history.append(self.offer)
+
+
         # turns taken increases
         self.turnsTaken += 1
-        # store the utility of the offer we are making
-        # self.our_utility_history.append(self.utility())
-        # print("Offer utility " + str(self.our_utility_history[-1]))
+
         # return the offer
         return self.offer
 
