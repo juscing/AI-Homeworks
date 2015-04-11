@@ -256,13 +256,13 @@ class JustinBot(BaseNegotiator):
         orderings_to_return = []
         while i < JustinBot.iteration_limit:
             # lets get a new ordering
+            print(self.calculate_offer_utility(self.preferences))
             shuffle(ordering)
             #calculate its utility
             utility = self.calculate_offer_utility(ordering)
             # is it above the threshold?
             # print(utility / self.max_utility)
-            print(utility)
-            print(self.max_utility)
+            print(utility / self.max_utility)
             if lowpercent <= utility / self.max_utility <= highpercent:
                 return ordering
                 dupe = False

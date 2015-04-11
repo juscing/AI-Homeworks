@@ -18,4 +18,5 @@ class Negotiator(BaseNegotiator):
             ordering = self.preferences[:]
             shuffle(ordering)
             self.offer = ordering[:]
+            print("Enemy utility " + str(self.utility()))
             return self.offer
