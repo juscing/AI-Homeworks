@@ -265,7 +265,7 @@ class JustinBot(BaseNegotiator):
         # Lets assume we are not going to accept the offer first
         acceptOffer = False
 
-        #Last Turn! Final Offer!  Either going to accept of reject.
+        # Last Turn! Final Offer!  Either going to accept of reject.
         if self.goingFirst and self.turnsTaken == self.iter_limit:
             print("decision on last offer!")
         #if we come out on top or are equal, accept
@@ -276,6 +276,5 @@ class JustinBot(BaseNegotiator):
         # If we think that our utility is higher than theirs for this offer... accept
         if self.our_utility_from_enemy_offer_history[-1] > self.enemy_utility_from_enemy_offer_history[-1]:
             acceptOffer = True
-
         #return bool, True = accept, False = reject
         return acceptOffer
