@@ -44,6 +44,8 @@ class DictatorBot(BaseNegotiator):
 
         self.goingFirst = None
         self.acceptOffer = False
+        self.currentLow = 1
+        self.lastLow = 0.75
 
     # initialize(self : BaseNegotiator, preferences : list(String), iter_limit : Int)
         # Performs per-round initialization - takes in a list of items, ordered by 
@@ -75,6 +77,7 @@ class DictatorBot(BaseNegotiator):
 
         # Set our max utility to be the value of the preference utility
         self.max_utility = self.calculate_offer_utility(preferences)
+        self.currentLow = self.max_utility
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
     # Given the opposing negotiator's last offer (represented as an ordered list),
@@ -89,6 +92,7 @@ class DictatorBot(BaseNegotiator):
         ### All the calculations up here
         print("Turn #" + str(self.turnsTaken))
         if offer:
+        
             print("Enemy offer: " + str(offer))
             self.enemy_offer_history.append(offer)
 
@@ -123,7 +127,7 @@ class DictatorBot(BaseNegotiator):
             self.enemy_utility_from_enemy_offer_history.append(self.calculate_our_offer_on_enemy_scale(offer))
             print("Estimated utility enemy receives from their offer: " + str(
                 self.enemy_utility_from_enemy_offer_history[-1]))
-
+            
             if self.goingFirst is None:
                 self.goingFirst = False
                 print("I'm not going first!")
@@ -148,8 +152,8 @@ class DictatorBot(BaseNegotiator):
             if self.turnsTaken == 0:
                 self.offer = self.preferences[:]
             else:
-                self.offer = self.generate_offer(1-((1+self.turnsTaken)*0.05),
-                    1-(self.turnsTaken*0.05))
+				
+                self.offer = self.generate_offer()
 
             # This is the last offer!! Person going first has to choose whether to 
             # accept or not
@@ -172,33 +176,33 @@ class DictatorBot(BaseNegotiator):
         # return the offer
         return self.offer
 
-    def generate_offer(self, lowpercent, highpercent):
-        """
-        Will only go down to 75% of total and will only accept if it comes out on top
-		On subsequent runs if it there was an agreement on the previous, it will increase
-			its bottom threshold by 5%
-        """
-        # higher bound is not flexible... lower bound is
-        i = 0
+
+    def generate_offer(self):
+        # Will only go down to 75% of total and will only accept if it comes out on top
+        # On subsequent runs if it there was an agreement on the previous, it will increase
+        #    its bottom threshold by 5%
+
+        #what is 5% of total utility?
+        fivePercent = (5 * self.max_utility) / 100
         # copy the preferences
         ordering = self.preferences[:]
+        if self.currentLow > self.lastLow:
+            self.currentLow = self.currentLow - fivePercent
+            
+        i = 0
         while i < DictatorBot.iteration_limit:
             # lets get a new ordering
             shuffle(ordering)
             #calculate its utility
             utility = self.calculate_offer_utility(ordering)
             # is it above the threshold?
-            if lowpercent <= utility / self.max_utility <= highpercent:
+            if utility >= self.currentLow:
                 return ordering
             i += 1
 
-        # we failed to generate one in the number of iterations specified...
-        if lowpercent - 0.05 > 0:
-            return self.generate_offer(lowpercent - 0.05, highpercent)
-        elif highpercent + 0.05 < 1:
-            return self.generate_offer(lowpercent, highpercent + 0.05)
-        else:
-            print("This should never happen, and you just screwed up")
+        # we failed to generate one in the number of iterations specified
+        #just put forth the last offer
+        return self.our_offer_history[-1]
 
     def calculate_offer_utility(self, offer):
         backup = self.offer[:]
@@ -206,6 +210,7 @@ class DictatorBot(BaseNegotiator):
         utility = self.utility()
         self.offer = backup[:]
         return utility
+
 
     def calculate_our_offer_on_enemy_scale(self, offer):
         backuppref = self.preferences[:]
@@ -223,6 +228,7 @@ class DictatorBot(BaseNegotiator):
         # receive_utility(self : BaseNegotiator, utility : Float)
         # Store the utility the other negotiator received from their last offer
 
+     
     def receive_utility(self, utility):
         self.enemy_offer_rawutility_history.append(utility)
 
@@ -238,6 +244,8 @@ class DictatorBot(BaseNegotiator):
             self.ourScoreHistory.append(results[2])
             self.enemyScoreHistory.append(results[1])
 
+        if self.lastLow < self.currentLow:
+            self.lastLow = self.currentLow
         print(self.our_total_score())
         print(self.enemy_total_score())
 
