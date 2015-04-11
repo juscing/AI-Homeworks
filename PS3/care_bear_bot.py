@@ -267,11 +267,9 @@ class JustinBot(BaseNegotiator):
 			#if we come out on top or are equal, accept
 			
 			#if spiked, reject
-			
 
         # If we think that our utility is higher than theirs for this offer... accept
         if self.our_utility_from_enemy_offer_history[-1] > self.enemy_utility_from_enemy_offer_history[-1]:
-            acceptOffer = True
-		
+			acceptOffer = True
 		#return bool, True = accept, False = reject
 		return acceptOffer
