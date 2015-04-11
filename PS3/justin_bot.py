@@ -214,7 +214,7 @@ class JustinBot(BaseNegotiator):
             if self.turnsTaken == 0:
                 self.offer = self.preferences[:]
             else:
-                window = (1 - self.our_preferences_on_enemy_scale / self.max_utility) / self.iter_limit
+                # window = (1 - self.our_preferences_on_enemy_scale / self.max_utility) / self.iter_limit
                 self.offer = self.generate_offer()[:]
 
                 # This is the last offer!! Person going first has to choose whether to accept or not
@@ -262,7 +262,8 @@ class JustinBot(BaseNegotiator):
             orderings.append((ordering,self.calculate_offer_utility(ordering),self.calculate_scaled_enemy_offer(ordering)))
             i += 1
 
-        orderings.sort(key=lambda vertex: (vertex[1], -vertex[2]))
+        orderings.sort(key=lambda vertex: (-vertex[1], vertex[2]))
+        print("orderings " + str(orderings))
         return orderings[0][0]
 
     def calculate_offer_utility(self, offer):
@@ -296,7 +297,7 @@ class JustinBot(BaseNegotiator):
         utility *= scale
         self.offer = backup[:]
         self.preferences = backuppref[:]
-        print("Offer " + str(offer) + " " + str(utility))
+        # print("Offer " + str(offer) + " " + str(utility))
         return utility
 
         # receive_utility(self : BaseNegotiator, utility : Float)
