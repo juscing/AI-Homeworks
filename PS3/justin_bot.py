@@ -54,6 +54,15 @@ class JustinBot(BaseNegotiator):
         # How many times have we run?
         self.num_negotiations = 0
 
+        # How to divide percentages
+        self.num_offer_divisions = 0
+
+        # How many offers per division
+        self.offers_per_division = 0
+
+        # offer list
+        self.offerlist = []
+
         # initialize(self : BaseNegotiator, preferences : list(String), iter_limit : Int)
         # Performs per-round initialization - takes in a list of items, ordered by the item's
         # preferability for this negotiator
@@ -90,6 +99,15 @@ class JustinBot(BaseNegotiator):
 
         # Lets assume we are not going to accept the offer first
         self.acceptOffer = False
+
+        # How to divide percentages
+        self.num_offer_divisions = 0
+
+        # How many offers per division
+        self.offers_per_division = 0
+
+        # get rid of previous offers
+        self.offerlist.clear()
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
         # Given the opposing negotiator's last offer (represented as an ordered list),
@@ -189,11 +207,23 @@ class JustinBot(BaseNegotiator):
 
         # Only make an offer if we are not accepting
         if not self.acceptOffer:
+            print("We did not accept the offer")
             # Let's always begin by making our ideal offer
             if self.turnsTaken == 0:
                 self.offer = self.preferences[:]
             else:
-                self.offer = self.generate_offer(1 - ((1 + self.turnsTaken) * 0.05), 1 - (self.turnsTaken * 0.05))
+                if self.offerlist:
+                    offer = self.offerlist[0]
+                    offertuple = self.offerlist.pop()
+                    self.offer = offertuple[0][:]
+                else:
+                    window = (1 - self.our_preferences_on_enemy_scale) / self.iter_limit
+                    self.offerlist = self.generate_offers(1 - ((1 + self.turnsTaken) * window), 1 - (self.turnsTaken * window))
+
+                    offertuple = self.offerlist[0]
+                    offer = offertuple[0]
+                    print ("Our offer " + str(offer))
+                    self.offer = offer[:]
 
                 # This is the last offer!! Person going first has to choose whether to accept or not
             if not self.goingFirst and self.turnsTaken == self.iter_limit - 1:
@@ -215,12 +245,6 @@ class JustinBot(BaseNegotiator):
 
 
 
-
-        # If the offer for them is better for them than their last offer, reject it
-
-        # Only make concessions if the other guy makes concessions
-
-
         # If we didn't accept the offer, add our history
         if not self.acceptOffer and self.turnsTaken > 0:
             self.our_offer_enemy_utility_history.append(self.calculate_scaled_enemy_offer(self.offer))
@@ -231,11 +255,12 @@ class JustinBot(BaseNegotiator):
         # return the offer
         return self.offer
 
-    def generate_offer(self, lowpercent, highpercent):
+    def generate_offers(self, lowpercent, highpercent):
         # higher bound is not flexible... lower bound is
         i = 0
         # copy the preferences
         ordering = self.preferences[:]
+        orderings_to_return = []
         while i < JustinBot.iteration_limit:
             # lets get a new ordering
             shuffle(ordering)
@@ -243,14 +268,24 @@ class JustinBot(BaseNegotiator):
             utility = self.calculate_offer_utility(ordering)
             # is it above the threshold?
             if lowpercent <= utility / self.max_utility <= highpercent:
-                return ordering
+                dupe = False
+                for item in orderings_to_return:
+                    if item[0] == ordering:
+                        dupe = True
+                        break
+                if not dupe:
+                    orderings_to_return.append((ordering,utility,self.calculate_scaled_enemy_offer(ordering)))
             i += 1
 
+        if orderings_to_return:
+            orderings_to_return.sort(key=lambda vertex: (vertex[1], -vertex[2]))
+            print(orderings_to_return)
+            return (orderings_to_return)
         # we failed to generate one in the number of iterations specified...
-        if lowpercent - 0.05 > 0:
-            return self.generate_offer(lowpercent - 0.05, highpercent)
+        elif lowpercent - 0.05 > 0:
+            return self.generate_offers(lowpercent - 0.05, highpercent)
         elif highpercent + 0.05 < 1:
-            return self.generate_offer(lowpercent, highpercent + 0.05)
+            return self.generate_offers(lowpercent, highpercent + 0.05)
         else:
             print("This should never happen, and you just screwed up")
 
@@ -260,7 +295,7 @@ class JustinBot(BaseNegotiator):
         utility = self.utility()
         self.offer = backup[:]
         return utility
-
+    """
     def calculate_offer_on_enemy_scale(self, offer):
         backuppref = self.preferences[:]
         self.preferences = self.enemy_max_offer[:]
@@ -270,12 +305,12 @@ class JustinBot(BaseNegotiator):
         self.offer = backup[:]
         self.preferences = backuppref[:]
         return utility
-
+    """
     def calculate_scaled_enemy_offer(self, offer):
         backuppref = self.preferences[:]
         self.preferences = self.enemy_max_offer[:]
         backup = self.offer[:]
-        self.offer = offer
+        self.offer = offer[:]
         utility = self.utility()
         scale = 1
         try:
@@ -285,10 +320,8 @@ class JustinBot(BaseNegotiator):
         utility *= scale
         self.offer = backup[:]
         self.preferences = backuppref[:]
+        print("Offer " + str(offer) + " " + str(utility))
         return utility
-
-    def convert_enemy_scaled_to_utility(self, ordering):
-        pass
 
         # receive_utility(self : BaseNegotiator, utility : Float)
         # Store the utility the other negotiator received from their last offer

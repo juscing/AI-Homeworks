@@ -84,7 +84,7 @@ class DictatorBot(BaseNegotiator):
     #this method.
 
     def make_offer(self, offer):
-       
+
 
         ### All the calculations up here
         print("Turn #" + str(self.turnsTaken))
@@ -173,7 +173,7 @@ class DictatorBot(BaseNegotiator):
         return self.offer
 
     def generate_offer(self, lowpercent, highpercent):
-	    """
+        """
         Will only go down to 75% of total and will only accept if it comes out on top
 		On subsequent runs if it there was an agreement on the previous, it will increase
 			its bottom threshold by 5%
