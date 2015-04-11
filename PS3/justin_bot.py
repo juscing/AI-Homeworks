@@ -3,7 +3,7 @@ from negotiator_base import BaseNegotiator
 
 
 class JustinBot(BaseNegotiator):
-    iteration_limit = 500
+    iteration_limit = 100
 
     def __init__(self):
         super().__init__()
@@ -109,6 +109,8 @@ class JustinBot(BaseNegotiator):
         # get rid of previous offers
         self.offerlist.clear()
 
+        self.offer.clear()
+
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
         # Given the opposing negotiator's last offer (represented as an ordered list),
         # return a new offer. If you wish to accept an offer & end negotiations, return the same offer
@@ -212,18 +214,8 @@ class JustinBot(BaseNegotiator):
             if self.turnsTaken == 0:
                 self.offer = self.preferences[:]
             else:
-                if self.offerlist:
-                    offer = self.offerlist[0]
-                    offertuple = self.offerlist.pop()
-                    self.offer = offertuple[0][:]
-                else:
-                    window = (1 - self.our_preferences_on_enemy_scale) / self.iter_limit
-                    self.offerlist = self.generate_offers(1 - ((1 + self.turnsTaken) * window), 1 - (self.turnsTaken * window))
-
-                    offertuple = self.offerlist[0]
-                    offer = offertuple[0]
-                    print ("Our offer " + str(offer))
-                    self.offer = offer[:]
+                window = (1 - self.our_preferences_on_enemy_scale / self.max_utility) / self.iter_limit
+                self.offer = self.generate_offer(1 - ((1 + self.turnsTaken) * window), 1 - (self.turnsTaken * window))[:]
 
                 # This is the last offer!! Person going first has to choose whether to accept or not
             if not self.goingFirst and self.turnsTaken == self.iter_limit - 1:
@@ -255,8 +247,9 @@ class JustinBot(BaseNegotiator):
         # return the offer
         return self.offer
 
-    def generate_offers(self, lowpercent, highpercent):
+    def generate_offer(self, lowpercent, highpercent):
         # higher bound is not flexible... lower bound is
+        print("Finding offers between: " + str(lowpercent) + " and " + str(highpercent))
         i = 0
         # copy the preferences
         ordering = self.preferences[:]
@@ -267,7 +260,11 @@ class JustinBot(BaseNegotiator):
             #calculate its utility
             utility = self.calculate_offer_utility(ordering)
             # is it above the threshold?
+            # print(utility / self.max_utility)
+            print(utility)
+            print(self.max_utility)
             if lowpercent <= utility / self.max_utility <= highpercent:
+                return ordering
                 dupe = False
                 for item in orderings_to_return:
                     if item[0] == ordering:
@@ -277,21 +274,27 @@ class JustinBot(BaseNegotiator):
                     orderings_to_return.append((ordering,utility,self.calculate_scaled_enemy_offer(ordering)))
             i += 1
 
+        moreorder = None
         if orderings_to_return:
             orderings_to_return.sort(key=lambda vertex: (vertex[1], -vertex[2]))
             print(orderings_to_return)
-            return (orderings_to_return)
+            return (orderings_to_return[0][0])
         # we failed to generate one in the number of iterations specified...
-        elif lowpercent - 0.05 > 0:
-            return self.generate_offers(lowpercent - 0.05, highpercent)
-        elif highpercent + 0.05 < 1:
-            return self.generate_offers(lowpercent, highpercent + 0.05)
+        elif lowpercent - 0.05 > self.our_preferences_on_enemy_scale - 0.05:
+            moreorder = self.generate_offer(lowpercent - 0.05, highpercent)
+
+        higherorder = None
+        if not moreorder:
+            if highpercent + 0.05 < 1 + 0.05:
+                return self.generate_offer(lowpercent, highpercent + 0.05)
+            else:
+                return self.generate_offer(lowpercent - 0.05, highpercent)
         else:
-            print("This should never happen, and you just screwed up")
+            return moreorder
 
     def calculate_offer_utility(self, offer):
         backup = self.offer[:]
-        self.offer = offer
+        self.offer = offer[:]
         utility = self.utility()
         self.offer = backup[:]
         return utility

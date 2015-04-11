@@ -75,6 +75,8 @@ class DictatorBot(BaseNegotiator):
         self.our_preferences_on_enemy_scale = 0
         self.enemy_max_offer.clear()
 
+        self.offer.clear()
+
         # Set our max utility to be the value of the preference utility
         self.max_utility = self.calculate_offer_utility(preferences)
         self.currentLow = self.max_utility

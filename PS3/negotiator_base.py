@@ -15,6 +15,7 @@ class BaseNegotiator:
     def initialize(self, preferences, iter_limit):
         self.preferences = preferences
         self.iter_limit = iter_limit
+        self.offer.clear()
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
         # Given the opposing negotiator's last offer (represented as an ordered list), 
