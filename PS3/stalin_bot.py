@@ -42,12 +42,6 @@ class JustinBot(BaseNegotiator):
 
         self.goingFirst = None
 
-        # How we learn across trials...
-        self.initial_percentage = [1]
-
-        # Reset this one per run though
-        self.num_higher_offers = 0
-
     # initialize(self : BaseNegotiator, preferences : list(String), iter_limit : Int)
         # Performs per-round initialization - takes in a list of items, ordered by the item's
         # preferability for this negotiator
@@ -75,9 +69,6 @@ class JustinBot(BaseNegotiator):
 
         # Set our max utility to be the value of the preference utility
         self.max_utility = self.calculate_offer_utility(preferences)
-
-        # Num times their offer got higher
-        self.num_higher_offers = 0
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
         # Given the opposing negotiator's last offer (represented as an ordered list),
@@ -122,33 +113,12 @@ class JustinBot(BaseNegotiator):
                 self.our_preferences_on_enemy_scale = self.calculate_our_offer_on_enemy_scale(self.preferences)
                 print("Our preferences on the enemy's estimated utility: " + str(self.our_preferences_on_enemy_scale))
 
-                ### Learn across runs ###
-                # Is this not the initial offer?
-                if len(self.enemy_offer_rawutility_history) > 1:
-                    self.num_higher_offers += 1
-
-                # We need to recalculate scaling percentages only if there are a greater number of higher offers...
-                i = 0
-                if self.num_higher_offers > 1 and self.num_higher_offers > len(self.initial_percentage):
-
-                    while i < self.num_higher_offers:
-                        self.initial_percentage[i] = self.enemy_offer_rawutility_history[i] / self.enemy_max_utility
-                        i+=1
-
-                self.initial_percentage[i] = 1
-
-
-
-
-
                 # Previous offers now based on this new preferred ordering
                 print("Recalculating previous utility estimates")
                 self.enemy_utility_from_enemy_offer_history.clear()
                 for ordering in self.enemy_utility_from_enemy_offer_history:
                     self.enemy_utility_from_enemy_offer_history.append(self.calculate_our_offer_on_enemy_scale(offer))
                 print(self.enemy_utility_from_enemy_offer_history)
-
-
 
             # Now that we have reset the best estimate
             # Get our utility from this offer
