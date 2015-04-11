@@ -1,4 +1,4 @@
-from random import shuffle
+import random
 from negotiator_base import BaseNegotiator
 
 
@@ -215,7 +215,7 @@ class JustinBot(BaseNegotiator):
                 self.offer = self.preferences[:]
             else:
                 window = (1 - self.our_preferences_on_enemy_scale / self.max_utility) / self.iter_limit
-                self.offer = self.generate_offer(1 - ((1 + self.turnsTaken) * window), 1 - (self.turnsTaken * window))[:]
+                self.offer = self.generate_offer()[:]
 
                 # This is the last offer!! Person going first has to choose whether to accept or not
             if not self.goingFirst and self.turnsTaken == self.iter_limit - 1:
@@ -247,50 +247,23 @@ class JustinBot(BaseNegotiator):
         # return the offer
         return self.offer
 
-    def generate_offer(self, lowpercent, highpercent):
+    def generate_offer(self):
         # higher bound is not flexible... lower bound is
-        print("Finding offers between: " + str(lowpercent) + " and " + str(highpercent))
         i = 0
-        # copy the preferences
-        ordering = self.preferences[:]
-        orderings_to_return = []
-        while i < JustinBot.iteration_limit:
-            # lets get a new ordering
-            print(self.calculate_offer_utility(self.preferences))
-            shuffle(ordering)
-            #calculate its utility
-            utility = self.calculate_offer_utility(ordering)
-            # is it above the threshold?
-            # print(utility / self.max_utility)
-            print(utility / self.max_utility)
-            if lowpercent <= utility / self.max_utility <= highpercent:
-                return ordering
-                dupe = False
-                for item in orderings_to_return:
-                    if item[0] == ordering:
-                        dupe = True
-                        break
-                if not dupe:
-                    orderings_to_return.append((ordering,utility,self.calculate_scaled_enemy_offer(ordering)))
+        orderings = []
+        while i <= JustinBot.iteration_limit:
+            ordering = self.preferences[:]
+            j = 0
+            while j <= self.turnsTaken:
+                a, b = random.randint(0, len(ordering) - 1), random.randint(0, len(ordering) - 1)
+                ordering[b], ordering[a] = ordering[a], ordering[b]
+                j += 1
+
+            orderings.append((ordering,self.calculate_offer_utility(ordering),self.calculate_scaled_enemy_offer(ordering)))
             i += 1
 
-        moreorder = None
-        if orderings_to_return:
-            orderings_to_return.sort(key=lambda vertex: (vertex[1], -vertex[2]))
-            print(orderings_to_return)
-            return (orderings_to_return[0][0])
-        # we failed to generate one in the number of iterations specified...
-        elif lowpercent - 0.05 > self.our_preferences_on_enemy_scale - 0.05:
-            moreorder = self.generate_offer(lowpercent - 0.05, highpercent)
-
-        higherorder = None
-        if not moreorder:
-            if highpercent + 0.05 < 1 + 0.05:
-                return self.generate_offer(lowpercent, highpercent + 0.05)
-            else:
-                return self.generate_offer(lowpercent - 0.05, highpercent)
-        else:
-            return moreorder
+        orderings.sort(key=lambda vertex: (vertex[1], -vertex[2]))
+        return orderings[0][0]
 
     def calculate_offer_utility(self, offer):
         backup = self.offer[:]
