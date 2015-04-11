@@ -3,7 +3,7 @@ from negotiator_base import BaseNegotiator
 
 
 class JustinBot(BaseNegotiator):
-    iteration_limit = 100
+    iteration_limit = 500
 
     def __init__(self):
         super().__init__()
@@ -246,6 +246,8 @@ class JustinBot(BaseNegotiator):
 
         # return the offer
         return self.offer
+
+    
 
     def generate_offer(self):
         # higher bound is not flexible... lower bound is
