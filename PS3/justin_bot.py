@@ -319,35 +319,36 @@ class JustinBot(BaseNegotiator):
             self.ourScoreHistory.append(results[2])
             self.enemyScoreHistory.append(results[1])
 
-        print("Let's update the enemy scale stuff")
-        print("They actually got " + str(self.enemyScoreHistory[-1]))
-        percent = 0
-        if self.acceptOffer:
-            # If we accepted the offer
-            eutil = self.enemy_utility_from_enemy_offer_history[-1]
-            print("We thought they were getting " + str(eutil))
-            percent = 1 - (eutil / self.enemyScoreHistory[-1])
-        else:
-            # They accepted our offer
-            if self.turnsTaken > 1:
-                eutil = self.our_offer_enemy_utility_history[-1]
+        if results[0]:
+            print("Let's update the enemy scale stuff")
+            print("They actually got " + str(self.enemyScoreHistory[-1]))
+            percent = 0
+            if self.acceptOffer:
+                # If we accepted the offer
+                eutil = self.enemy_utility_from_enemy_offer_history[-1]
+                print("We thought they were getting " + str(eutil))
                 percent = 1 - (eutil / self.enemyScoreHistory[-1])
-                print("We thought they were getting ")
+            else:
+                # They accepted our offer
+                if self.turnsTaken > 1:
+                    eutil = self.our_offer_enemy_utility_history[-1]
+                    percent = 1 - (eutil / self.enemyScoreHistory[-1])
+                    print("We thought they were getting ")
 
-        print("We were off by " + str(percent))
-        i = 0
-        while i < len(self.this_run_increases):
-            try:
-                persnum = self.permanent_increases[i]
-                self.permanent_increases[i] = ((self.num_negotiations * persnum) + self.this_run_increases[i] + percent) / (self.num_negotiations + 1)
-
-            except IndexError:
+            print("We were off by " + str(percent))
+            i = 0
+            while i < len(self.this_run_increases):
                 try:
-                    self.permanent_increases[i] = self.this_run_increases[i] + percent
-                except IndexError:
-                    self.permanent_increases.append(self.this_run_increases[i] + percent)
+                    persnum = self.permanent_increases[i]
+                    self.permanent_increases[i] = ((self.num_negotiations * persnum) + self.this_run_increases[i] + percent) / (self.num_negotiations + 1)
 
-            i += 1
+                except IndexError:
+                    try:
+                        self.permanent_increases[i] = self.this_run_increases[i] + percent
+                    except IndexError:
+                        self.permanent_increases.append(self.this_run_increases[i] + percent)
+
+                i += 1
 
 
         print(self.our_total_score())
