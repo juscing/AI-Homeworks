@@ -11,6 +11,7 @@ class DictatorBot(BaseNegotiator):
         # History of offers
         self.our_offer_history = []
         self.enemy_offer_history = []
+        self.offer.clear()
 
         # The enemy's best offer so far
         self.enemy_max_offer = []
@@ -44,8 +45,8 @@ class DictatorBot(BaseNegotiator):
 
         self.goingFirst = None
         self.acceptOffer = False
-        self.currentLow = 1
-        self.lastLow = 0.75
+        self.currentLow = 0
+        self.lastLow = 0
 
     # initialize(self : BaseNegotiator, preferences : list(String), iter_limit : Int)
         # Performs per-round initialization - takes in a list of items, ordered by 
@@ -78,6 +79,7 @@ class DictatorBot(BaseNegotiator):
         # Set our max utility to be the value of the preference utility
         self.max_utility = self.calculate_offer_utility(preferences)
         self.currentLow = self.max_utility
+        self.lastLow = self.max_utility * 0.75
 
     # make_offer(self : BaseNegotiator, offer : list(String)) --> list(String)
     # Given the opposing negotiator's last offer (represented as an ordered list),
@@ -270,7 +272,7 @@ class DictatorBot(BaseNegotiator):
         #All other turns: must be within 5% of what was just offered and we are on top
         else:
             #within 5%
-            p = (self.our_offer_utility_history[-1] / self.max_utility) * 100
+            p = (self.currentLow / self.max_utility) * 100
             q = (self.our_utility_from_enemy_offer_history[-1] /
                 self.max_utility) * 100
             if abs(p-q) <= 5:
