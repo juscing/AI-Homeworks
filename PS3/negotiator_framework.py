@@ -2,8 +2,8 @@ from csv import DictReader
 from sys import argv, exit
 from itertools import islice
 from jci5kb import jci5kb_Negotiator
-from care_bear_bot import CareBearBot
-from dictator_bot import DictatorBot
+from care_bear_negotiator import CareBearBot
+from dictator_negotiator import DictatorBot
 from negotiator import Negotiator
 from random import seed, randint
 
@@ -68,8 +68,8 @@ if __name__ == "__main__":
         exit(-42)
     score_a = score_b = 0
     # We will replace Negotiator here with <your id>_Negotiator, as specified in the Readme
-    negotiator_a = jci5kb_Negotiator()
-    negotiator_b = DictatorBot()
+    negotiator_a = CareBearBot()
+    negotiator_b = jci5kb_Negotiator()
     for scenario in argv[1:]:
         # Get the scenario parameters
         (num_iters, mapping) = read_scenario(scenario)
