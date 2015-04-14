@@ -136,7 +136,7 @@ class CareBearBot(BaseNegotiator):
         if(offer):
             self.accept_offer(offer)
 
-        if self.acceptOffer:
+        if self.acceptOffer and offer:
             self.offer = offer[:]
 
 
