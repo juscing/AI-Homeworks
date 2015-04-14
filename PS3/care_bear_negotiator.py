@@ -185,6 +185,11 @@ class CareBearBot(BaseNegotiator):
         low = seventyFive - percent
         # copy the preferences
         ordering = self.preferences[:]
+        
+        x = 0.75 * ourUtil
+        y = .1 * ourUtil
+        high1 = x + y
+        low1 = x-y
             
         i = 0
         while i < CareBearBot.iteration_limit:
@@ -193,7 +198,7 @@ class CareBearBot(BaseNegotiator):
             #calculate its utility
             utility = self.calculate_offer_utility(ordering)
             # is it above the threshold?
-            if low <= utility <= high:
+            if low1 <= utility <= high1:
                 return ordering
             i += 1
 
