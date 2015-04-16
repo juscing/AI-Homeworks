@@ -5,7 +5,7 @@ from random import shuffle
 from negotiator_base import BaseNegotiator
 
 class CareBearBot(BaseNegotiator):
-    iteration_limit = 1000
+    iteration_limit = 500
 
     def __init__(self):
         super().__init__()
