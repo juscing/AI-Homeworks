@@ -5,7 +5,7 @@ from random import shuffle
 from negotiator_base import BaseNegotiator
 
 class CareBearBot(BaseNegotiator):
-    iteration_limit = 1000
+    iteration_limit = 500
 
     def __init__(self):
         super().__init__()
@@ -257,20 +257,14 @@ class CareBearBot(BaseNegotiator):
 
     def accept_offer(self, offer):
     
-        #our utility from our last offer
-        ourUtil = self.our_offer_utility_history[-1]
         max = self.max_utility
-        #within 10% of our last offered util
-        x = max * 0.10
-        low = ourUtil - x
-        #our util from this offer
+        x = max * 0.5
         util = self.calculate_offer_utility(offer)
         
         #Last Turn! Final Offer!  Always accept
         if self.goingFirst and self.turnsTaken == self.iter_limit:
             self.acceptOffer = True
 
-        #All other turns: must be within 5% of what was just offered and we are on top
         else:
-            if low <= util:
+            if util >= x:
                 self.acceptOffer = True
