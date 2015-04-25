@@ -1,10 +1,8 @@
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Root {
 	
-	private List<Leaf> children;
+	private Leaf[] children;
 	private double[] p;
 	private int totalData;
 	private int totalTrue;
@@ -12,21 +10,50 @@ public class Root {
 	
 	
 	public Root(int numCols) {
-		this.children = new ArrayList<Leaf>();
+		this.children = new Leaf[numCols];
 		this.p = new double[2];
 		this.totalData = 0;
 		this.totalTrue = 0;
 		this.valid = false;
 	}
 	
-	public void addNode(int pos, boolean numeric) {
-		
+	public int getNumTrue() {
+		return this.totalTrue;
 	}
 	
-	public void addTrainingData(int column, int data, boolean classification) {
+	public int getNumFalse() {
+		return this.totalData - this.totalTrue;
+	}
+	
+	public void addNode(int column, int columns) {
+		this.children[column] = new Leaf();
+	}
+	
+	public boolean addTrainingData(int column, int data, boolean classification) {
 		if(!valid) {
-			
+			for(Leaf node : this.children) {
+				if(node == null) {
+					// You didn't set up all the nodes properly before doing this
+					return false;
+				}
+			}
+			this.valid = true;
 		}
+		// Update the leaf
+		this.children[column].addTrainingData(data, classification);
+		// Add to total number of trainings
+		this.totalData++;
+		// Recalculate the probabilities
+		if(classification) {
+			this.totalTrue++;
+		}
+		this.p[1] = ((double) this.totalTrue / this.totalData);
+		this.p[0] = 1 - p[1];
+		return true;
+	}
+	
+	public boolean classify(int[] data) {
+		return false;
 	}
 	
 }
