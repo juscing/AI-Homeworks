@@ -25,8 +25,12 @@ public class Root {
 		return this.totalData - this.totalTrue;
 	}
 	
-	public void addNode(int column, int columns) {
-		this.children[column] = new Leaf();
+	public void addNode(int column, int categories) {
+		if(categories != 0) {
+			this.children[column] = new Leaf(categories, this);
+		} else {
+			// make numeric node...
+		}
 	}
 	
 	public boolean addTrainingData(int column, int data, boolean classification) {
