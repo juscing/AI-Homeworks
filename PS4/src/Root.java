@@ -8,16 +8,25 @@ public class Root {
 	private double[] p;
 	private int totalData;
 	private int totalTrue;
+	private boolean valid;
 	
-	public Root() {
+	
+	public Root(int numCols) {
 		this.children = new ArrayList<Leaf>();
 		this.p = new double[2];
 		this.totalData = 0;
 		this.totalTrue = 0;
+		this.valid = false;
 	}
 	
-	public void addTraining() {
+	public void addNode(int pos, boolean numeric) {
 		
+	}
+	
+	public void addTrainingData(int column, int data, boolean classification) {
+		if(!valid) {
+			
+		}
 	}
 	
 }
