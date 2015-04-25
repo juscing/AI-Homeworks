@@ -4,6 +4,7 @@ import java.lang.Class;
 import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 
@@ -33,21 +34,36 @@ public class CoinFlip extends Classifier{
 	}
 
 	@Override
-	public void train(String trainingDataFilpath) {
-		// TODO Auto-generated method stub
+	public void train(String trainingDataFilepath) {
+		readData(trainingDataFilepath);
 
 	}
 
 	@Override
 	public void makePredictions(String testDataFilepath) {
-		// TODO Auto-generated method stub
-
+		Scanner scanr = null;
+		try {
+			File name = new File(testDataFilepath);
+			scanr = new Scanner(name);
+		} 
+		catch (FileNotFoundException e) {
+			System.out.println("Sorry, that file can not be found. Exiting");
+			System.exit(0);
+		}
+		
+		String line;
+		Random rand = new Random();
+		while (scanr.hasNext()) {
+			line = scanr.nextLine();
+			int x = rand.nextInt(2);
+			if(x == 1)
+				System.out.println(outOne);
+			else
+				System.out.println(outZero);
+		}
+		
 	}
 
-
-	public static void getFile(String filePath){
-		//CoinFlip.getResource(filePath);
-	}
 	
 //----------------------------------------------------------------------------------------------------
 	
@@ -100,7 +116,7 @@ public class CoinFlip extends Classifier{
 	}
 
 	public static boolean readData(String data){
-		System.out.println("going to open file:");
+		//System.out.println("going to open file:");
 		Scanner scanr = null;
 		try {
 			File name = new File(data);
@@ -118,7 +134,7 @@ public class CoinFlip extends Classifier{
 		String line;
 		
 		//read in the rest of census.train
-		System.out.println("going to read file:");
+		//System.out.println("going to read file:");
 		while (scanr.hasNext()) {
 			String[] lineData = new String[setUp.size() + 1];  //why does my initializer need
 			//  to be inside the while loop, when before it replaces all items in census
@@ -141,7 +157,7 @@ public class CoinFlip extends Classifier{
 			}
 			
 		}
-		System.out.println("going to close file:");
+		//System.out.println("going to close file:");
 		scanr.close();
 		return true;
 	}
@@ -161,8 +177,8 @@ public class CoinFlip extends Classifier{
 		}
 		System.out.println();
 		
-		hw.readData("trainingData/census.train.short");
-		System.out.println("read in data");
+		hw.train("trainingData/census.train.short");
+		//System.out.println("read in data");
 		
 		for(int i = 0; i<3; i++){
 			String[] printArray = census.get(i);
@@ -172,7 +188,10 @@ public class CoinFlip extends Classifier{
 			}
 			System.out.print("\n");
 		}
-			
+		
+		System.out.println("PREDICTIONS:");
+		hw.makePredictions("trainingData/census.train.short");
+		
 	}
 
 }
