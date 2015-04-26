@@ -1,5 +1,5 @@
 
-public class Leaf {
+public class Leaf implements LeafNode {
 
 	private double[][] p;
 	private int[][] rawData;
@@ -11,6 +11,7 @@ public class Leaf {
 		this.parent = parent;
 	}
 	
+	@Override
 	public void addTrainingData(int data, boolean classification) {
 		// update raw count
 		if(classification) {
@@ -29,5 +30,15 @@ public class Leaf {
 				 
 			}
 		}
+	}
+	
+	@Override
+	public double calculateProbGivenTrue(int val) {
+		return this.p[1][val];
+	}
+	
+	@Override
+	public double calculateProbGivenFalse(int val) {
+		return this.p[0][val];
 	}
 }
