@@ -35,7 +35,7 @@ public class BayesClassifier extends Classifier{
 				root.addNode(i, 0);
 			}
 			else{
-				int x = row.size()-1;
+				int x = row.size();
 				root.addNode(i, x);
 			}
 		}
@@ -62,7 +62,7 @@ public class BayesClassifier extends Classifier{
 		while (scanr.hasNext()) {
 			line = scanr.nextLine();
 			split = line.split("\\s+");
-			for(int i=0; i<setUp.size(); i++){
+			for(int i=0; i<setUp.size() - 1; i++){
 				//get this lines classification
 				boolean classification;
 				if(split[setUp.size()].equals(">50K"))
@@ -111,7 +111,7 @@ public class BayesClassifier extends Classifier{
 			line = scanr.nextLine();
 			if (line.length() != 0) {
 				split = line.split("\\s+");
-				int[] data = new int[setUp.size() - 1];
+				int[] data = new int[setUp.size()];
 				for(int i = 0; i < data.length; i++) {
 					// Lets find out if this is numeric
 					try {
@@ -126,6 +126,7 @@ public class BayesClassifier extends Classifier{
 						}
 					}
 				}
+				
 				if(root.classify(data)) {
 					System.out.println(outOne);
 				} else {
@@ -236,7 +237,8 @@ public class BayesClassifier extends Classifier{
 		System.out.println();
 		
 		hw.train("trainingData/census.train.short");
-		System.out.println("read in data");
+		hw.makePredictions("trainingData/census.test.short");
+		//System.out.println("read in data");
 		/*
 		for(int i = 0; i<3; i++){
 			String[] printArray = census.get(i);

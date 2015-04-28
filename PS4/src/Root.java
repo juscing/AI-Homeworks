@@ -2,7 +2,7 @@
 
 public class Root {
 	
-	private Leaf[] children;
+	private LeafNode[] children;
 	private double[] p;
 	private int totalData;
 	private int totalTrue;
@@ -10,7 +10,7 @@ public class Root {
 	
 	
 	public Root(int numCols) {
-		this.children = new Leaf[numCols];
+		this.children = new LeafNode[numCols];
 		this.p = new double[2];
 		this.totalData = 0;
 		this.totalTrue = 0;
@@ -29,13 +29,13 @@ public class Root {
 		if(categories != 0) {
 			this.children[column] = new Leaf(categories, this);
 		} else {
-			// make numeric node...
+			this.children[column] = new NumericLeaf(categories, this);
 		}
 	}
 	
 	public boolean addTrainingData(int column, int data, boolean classification) {
 		if(!valid) {
-			for(Leaf node : this.children) {
+			for(LeafNode node : this.children) {
 				if(node == null) {
 					// You didn't set up all the nodes properly before doing this
 					return false;
@@ -60,6 +60,8 @@ public class Root {
 		int trueP = 1;
 		int falseP = 1;
 		for(int i=0; i < this.children.length; i++) {
+			//System.out.println("child: " + this.children[i]);
+			//System.out.println("data: " + data[i]);
 			trueP *= this.children[i].calculateProbGivenTrue(data[i]);
 			falseP *= this.children[i].calculateProbGivenTrue(data[i]);
 		}
