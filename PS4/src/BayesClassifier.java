@@ -59,7 +59,7 @@ public class BayesClassifier extends Classifier{
 		while (scanr.hasNext()) {
 			line = scanr.nextLine();
 			split = line.split("\\s+");
-			for(int i=0; i<setUp.size() - 1; i++){
+			for(int i=0; i<setUp.size(); i++){
 				//get this lines classification
 				boolean classification;
 				if(split[setUp.size()].equals(">50K"))
@@ -77,10 +77,15 @@ public class BayesClassifier extends Classifier{
 				}
 				if (itemNum == -1){
 					//need to do string matching
-					itemNum = setUp.get(i).indexOf(split[i]);
+					itemNum = setUp.get(i).indexOf(split[i]) -1;
 				}
+				
+				System.out.print(itemNum + " ");
+				if (i == setUp.size()-1)
+					System.out.print(classification);
 				root.addTrainingData(i, itemNum, classification);
 			}
+			System.out.print("\n");
 		}
 		scanr.close();
 
