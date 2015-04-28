@@ -16,8 +16,8 @@ public class BayesClassifier extends Classifier{
 	static String outOne;
 	//reads in the outline for the data from census.names
 	static ArrayList<ArrayList<String>> setUp =  new ArrayList<ArrayList<String>>();
-	
-	static ArrayList<String[]> census = new ArrayList<String[]>();
+	//static ArrayList<String[]> census = new ArrayList<String[]>();
+	Root root;
 	
 //----------------------------------------------------------------------------------------------------
 	
@@ -27,7 +27,7 @@ public class BayesClassifier extends Classifier{
 		//each line in census.names get its own arraylist
 		readNames(namesFilepath);
 		//use census.names data to create the bayesian network
-		Root root = new Root(setUp.size());
+		root = new Root(setUp.size());
 		for(int i = 0; i<setUp.size(); i++){
 			//get desired row from setUp
 			ArrayList<String> row = setUp.get(i);
@@ -39,13 +39,53 @@ public class BayesClassifier extends Classifier{
 				root.addNode(i, x);
 			}
 		}
-
 		
 	}
 
 	@Override
 	public void train(String trainingDataFilpath) {
-		// TODO Auto-generated method stub
+		Scanner scanr = null;
+		try {
+			File name = new File(trainingDataFilpath);
+			scanr = new Scanner(name);
+		} 
+		catch (FileNotFoundException e) {
+			System.out.println("Sorry, that file can not be found. Exiting.");
+			System.exit(0);
+		}
+		
+		String[] split;
+		String line;
+		setUp.size();
+		//read in the rest of census.train
+		//System.out.println("going to read file:");
+		while (scanr.hasNext()) {
+			line = scanr.nextLine();
+			split = line.split("\\s+");
+			for(int i=0; i<setUp.size(); i++){
+				//get this lines classification
+				boolean classification;
+				if(split[setUp.size()].equals(">50K"))
+					classification = true;
+				else
+					classification = false;
+				//convert string data to int
+				String item = split[i];
+				int itemNum = -1;
+				try{
+					itemNum = Integer.parseInt(item);
+				}
+				catch (NumberFormatException e){
+					
+				}
+				if (itemNum == -1){
+					//need to do string matching
+					itemNum = setUp.get(i).indexOf(split[i]);
+				}
+				root.addTrainingData(i, itemNum, classification);
+			}
+		}
+		scanr.close();
 
 	}
 
@@ -145,7 +185,7 @@ public class BayesClassifier extends Classifier{
 		scanr.close();
 		return true;
 	}
-
+/*
 	public boolean readData(String data){
 		System.out.println("going to open file:");
 		Scanner scanr = null;
@@ -177,6 +217,8 @@ public class BayesClassifier extends Classifier{
 		scanr.close();
 		return true;
 	}
+	*/
+	
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
 		
@@ -193,9 +235,9 @@ public class BayesClassifier extends Classifier{
 		}
 		System.out.println();
 		
-		hw.readData("trainingData/census.train.short");
+		hw.train("trainingData/census.train.short");
 		System.out.println("read in data");
-		
+		/*
 		for(int i = 0; i<3; i++){
 			String[] printArray = census.get(i);
 			//System.out.println(i);
@@ -204,6 +246,7 @@ public class BayesClassifier extends Classifier{
 			}
 			System.out.print("\n");
 		}
+		*/
 			
 	}
 
