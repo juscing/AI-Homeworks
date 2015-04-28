@@ -80,12 +80,12 @@ public class BayesClassifier extends Classifier{
 					itemNum = setUp.get(i).indexOf(split[i]) - 1;
 				}
 				
-				System.out.print(itemNum + " ");
-				if (i == setUp.size()-1)
-					System.out.print(classification);
+				//System.out.print(itemNum + " ");
+				//if (i == setUp.size()-1)
+					//System.out.print(classification);
 				root.addTrainingData(i, itemNum, classification);
 			}
-			System.out.print("\n");
+			//System.out.print("\n");
 		}
 		scanr.close();
 
@@ -193,7 +193,7 @@ public class BayesClassifier extends Classifier{
 	public static void main(String[] args){
 		
 		BayesClassifier hw = new BayesClassifier("trainingData/census.names");
-		
+		/*
 		System.out.println(outZero +" "+ outOne);
 		System.out.println();
 		
@@ -204,7 +204,7 @@ public class BayesClassifier extends Classifier{
 			System.out.print("\n");
 		}
 		System.out.println();
-		
+		*/
 		hw.train("trainingData/census.train.short");
 
 		hw.makePredictions("trainingData/census.test.short");

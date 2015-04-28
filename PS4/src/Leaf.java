@@ -26,14 +26,14 @@ public class Leaf implements LeafNode {
 					if(this.parent.getNumFalse() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumFalse();
 					} else {
-						System.out.println("ZERO");
+						//System.out.println("ZERO");
 						this.p[i][j] = 0;
 					}
 				} else {
 					if(this.parent.getNumTrue() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumTrue();
 					} else {
-						System.out.println("ZERO");
+						//System.out.println("ZERO");
 						this.p[i][j] = 0;
 					}
 				}
