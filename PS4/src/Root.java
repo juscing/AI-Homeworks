@@ -45,9 +45,9 @@ public class Root {
 	public void calculateProbabilities() {
 		this.p[0] = ((double) (this.getNumFalse()) / this.totalData);
 		this.p[1] = ((double) (this.totalTrue) / this.totalData);
-		System.out.println("Root probabilities:");
-		System.out.println(">50K: " + this.p[1]);
-		System.out.println("<=50K: " + this.p[0]);
+		// System.out.println("Root probabilities:");
+		// System.out.println(">50K: " + this.p[1]);
+		// System.out.println("<=50K: " + this.p[0]);
 		for(LeafNode child : this.children) {
 			child.calculateProbabilities();
 		}

@@ -22,7 +22,7 @@ public class CategoryLeaf extends LeafNode {
 		} else {
 			this.rawData[0][data]++;
 		}
-		System.out.println("RAW DATA "+this.rawData[0][data] +" "+this.rawData[1][data]);
+		// System.out.println("RAW DATA "+this.rawData[0][data] +" "+this.rawData[1][data]);
 		// calculate probabilities
 		
 	}
