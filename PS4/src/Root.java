@@ -58,7 +58,7 @@ public class Root {
 	
 	public boolean classify(int[] data) {
 		int trueP = 1;
-		int falseP = 0;
+		int falseP = 1;
 		for(int i=0; i < this.children.length; i++) {
 			trueP *= this.children[i].calculateProbGivenTrue(data[i]);
 			falseP *= this.children[i].calculateProbGivenTrue(data[i]);
