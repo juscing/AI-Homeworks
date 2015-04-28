@@ -77,7 +77,7 @@ public class BayesClassifier extends Classifier{
 				}
 				if (itemNum == -1){
 					//need to do string matching
-					itemNum = setUp.get(i).indexOf(split[i]);
+					itemNum = setUp.get(i).indexOf(split[i]) - 1;
 				}
 				root.addTrainingData(i, itemNum, classification);
 			}

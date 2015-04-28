@@ -23,15 +23,17 @@ public class Leaf implements LeafNode {
 		for(int i = 0; i < p.length; i++) {
 			for(int j = 0; j < p[i].length; j++) {
 				if(i == 0) {
-					try{
+					if(this.parent.getNumFalse() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumFalse();
-					} catch(ArithmeticException e) {
+					} else {
+						System.out.println("ZERO");
 						this.p[i][j] = 0;
 					}
 				} else {
-					try{
+					if(this.parent.getNumTrue() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumTrue();
-					} catch(ArithmeticException e) {
+					} else {
+						System.out.println("ZERO");
 						this.p[i][j] = 0;
 					}
 				}
