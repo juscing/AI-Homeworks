@@ -17,6 +17,14 @@ public class Root {
 		this.valid = false;
 	}
 	
+	public void incrementTotaldata() {
+		this.totalData++;
+	}
+	
+	public void incrementNumTrue() {
+		this.totalTrue++;
+	}
+	
 	public int getNumTrue() {
 		return this.totalTrue;
 	}
@@ -45,13 +53,7 @@ public class Root {
 		}
 		// Update the leaf
 		this.children[column].addTrainingData(data, classification);
-		// Add to total number of trainings
-		this.totalData++;
-		// Recalculate the probabilities
-		if(classification) {
-			this.totalTrue++;
-			System.out.println("Num >50K "+this.totalTrue++);
-		}
+
 		this.p[1] = ((double) this.totalTrue / this.totalData);
 		this.p[0] = 1 - p[1];
 		return true;
