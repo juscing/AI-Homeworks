@@ -9,11 +9,10 @@ public class BayesClassifier extends Classifier{
 	//the two options we are trying to categorize
 	//the first item in census.names is outZero, the second is outOne, corresponding to the 
 	//  decision functions output of either 0 or 1 
-	static String outZero;
-	static String outOne;
+	String outZero;
+	String outOne;
 	//reads in the outline for the data from census.names
-	static ArrayList<ArrayList<String>> setUp =  new ArrayList<ArrayList<String>>();
-	//static ArrayList<String[]> census = new ArrayList<String[]>();
+	ArrayList<ArrayList<String>> names;
 	Root root;
 	
 //----------------------------------------------------------------------------------------------------
@@ -22,20 +21,22 @@ public class BayesClassifier extends Classifier{
 		super(namesFilepath);
 		//census.names read into an arraylist of arryalist's
 		//each line in census.names get its own arraylist
+		names = new ArrayList<ArrayList<String>>();
 		readNames(namesFilepath);
+		
 		//use census.names data to create the bayesian network
-		root = new Root(setUp.size());
-		for(int i = 0; i<setUp.size(); i++){
-			//get desired row from setUp
-			ArrayList<String> row = setUp.get(i);
-			if(row.get(1).equals("numeric")){
-				root.addNode(i, 0);
+		ArrayList<Integer> numeric = new ArrayList<Integer>(names.size());
+		ArrayList<String> nodeNames = new ArrayList<String>(names.size());
+		for(ArrayList<String> category : names) {
+			if(category.get(category.size() - 1).equals("numeric")) {
+				numeric.add(0);
+			} else {
+				numeric.add(category.size() - 1);
 			}
-			else{
-				int x = row.size() - 1;
-				root.addNode(i, x);
-			}
+			nodeNames.add(category.get(0));
 		}
+		
+		root = new Root(nodeNames, numeric);
 		
 	}
 
@@ -58,42 +59,32 @@ public class BayesClassifier extends Classifier{
 		while (scanr.hasNext()) {
 			line = scanr.nextLine();
 			split = line.split("\\s+");
-			
-			if(split[setUp.size()].equals(">50K"))
-				root.increment();
-			
-			for(int i=0; i<setUp.size(); i++){
-				//get this lines classification
-				boolean classification;
-				if(split[setUp.size()].equals(">50K"))
-					classification = true;
-				else
-					classification = false;
+			int[] data = new int[split.length];
+			for(int i=0; i<split.length - 1; i++){
 				//convert string data to int
 				String item = split[i];
 				int itemNum = -1;
 				try{
 					itemNum = Integer.parseInt(item);
 				}
-				catch (NumberFormatException e){
-					
-				}
+				catch (NumberFormatException e){}
 				if (itemNum == -1){
 					//need to do string matching
-					itemNum = setUp.get(i).indexOf(split[i]) - 1;
+					itemNum = names.get(i).indexOf(split[i]) - 1;
 				}
-
-				//System.out.print(itemNum + " ");
-				//if (i == setUp.size()-1)
-					//System.out.print(classification);
-
-				root.addTrainingData(i, itemNum, classification);
+				data[i] = itemNum;
 				//i is the column, itemNum is the data value, classification is >/=<50K
+			}
+			if(split[split.length - 1].equals(">50K")) {
+				root.addTrainingData(data, true);
+			} else {
+				root.addTrainingData(data, false);
 			}
 			//System.out.print("\n");
 		}
 		scanr.close();
-
+		
+		root.calculateProbabilities();
 	}
 
 	@Override
@@ -118,14 +109,14 @@ public class BayesClassifier extends Classifier{
 			line = scanr.nextLine();
 			if (line.length() != 0) {
 				split = line.split("\\s+");
-				int[] data = new int[setUp.size()];
+				int[] data = new int[split.length];
 				for(int i = 0; i < data.length; i++) {
 					// Lets find out if this is numeric
 					try {
 						data[i] = Integer.parseInt(split[i]);
 					}catch(NumberFormatException e) {
 						// its non-numeric
-						int pos = this.setUp.get(i).indexOf(split[i]) - 1;
+						int pos = this.names.get(i).indexOf(split[i]) - 1;
 						if(pos != -1) {
 							data[i] = pos;
 						} else {
@@ -133,10 +124,12 @@ public class BayesClassifier extends Classifier{
 						}
 					}
 				}
+				/*
 				for(int i : data) {
-					//System.out.print(i + " ");
+					System.out.print(i + " ");
 				}
-				//System.out.println();
+				System.out.println();
+				*/
 				if(root.classify(data)) {
 					System.out.println(outOne);
 				} else {
@@ -147,15 +140,14 @@ public class BayesClassifier extends Classifier{
 		scanr.close();
 	}
 	
-//----------------------------------------------------------------------------------------------------
-	
-	public void readNames(String names){
-		//This is to read in census.names and set up our table that will store the data
-		//  from census.train
-		//System.out.println("going to read file:");
+	public void readNames(String namesfile){
+		/*
+		 * This is to read in census.names and set up our table that will store the data
+		 * from census.train
+		 */
 		Scanner scanr = null;
 		try {
-			File name = new File(names);
+			File name = new File(namesfile);
 			scanr = new Scanner(name);
 		} 
 		catch (FileNotFoundException e) {
@@ -163,7 +155,6 @@ public class BayesClassifier extends Classifier{
 			System.exit(1);
 		}
 		String[] split;
-		//setUp = new ArrayList<ArrayList<String>>();
 		String line;
 		//get first line, the category we are trying to match
 		//place in variable names
@@ -179,21 +170,22 @@ public class BayesClassifier extends Classifier{
 				split = line.split("\\s+");
 				ArrayList<String> types = new ArrayList<>();
 				int i = 0;
-				while(i < split.length){
-					String item = split[i];
-					//System.out.print(item + " / ");
-					//place each item in that lines array list
-					types.add(item);
-					i++;
+				for(String word : split) {
+					types.add(word);
 				}
 				//place each lines array list in setUp
-				setUp.add(types);
-				//System.out.print("\n");
+				this.names.add(types);
 			}
 			
 		}
 		
 		scanr.close();
+		// Print checking
+		/*
+		for(ArrayList<String> category : setUp) {
+			System.out.println(category);
+		}
+		*/
 	}
 
 	
@@ -211,24 +203,10 @@ public class BayesClassifier extends Classifier{
 			testFile = "trainingData/census.test.short";
 		}
 		BayesClassifier hw = new BayesClassifier("trainingData/census.names");
-		/*
-		System.out.println(outZero +" "+ outOne);
-		System.out.println();
-		
-		for(int i = 0; i<setUp.size(); i++){
-			for(int j = 0; j<setUp.get(i).size(); j++){
-				System.out.print(setUp.get(i).get(j) + " ");
-			}
-			System.out.print("\n");
-		}
-		System.out.println();
-		*/
+
 		hw.train(trainingFile);
 
 		hw.makePredictions(testFile);
-		
-
-			
 	}
 
 }

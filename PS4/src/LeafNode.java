@@ -1,9 +1,23 @@
 
-public interface LeafNode {
+public abstract class LeafNode {
 	
-	public double calculateProbGivenTrue(int val);
+	private String name;
+	private Root parent;
 	
-	public double calculateProbGivenFalse(int val);
+	public LeafNode(String categoryName, Root parent) {
+		this.name = categoryName;
+		this.parent = parent;
+	}
 	
-	public void addTrainingData(int data, boolean classification);
+	public String getname() {
+		return name;
+	}
+	
+	public abstract double calculateProbGivenTrue(int val);
+	
+	public abstract double calculateProbGivenFalse(int val);
+	
+	public abstract void addTrainingData(int data, boolean classification);
+	
+	public abstract void calculateProbabilities();
 }
