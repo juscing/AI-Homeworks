@@ -195,6 +195,16 @@ public class BayesClassifier extends Classifier{
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
 		
+		String trainingFile;
+		String testFile;
+		
+		if(args.length > 1) {
+			trainingFile = args[0];
+			testFile = args[1];
+		} else {
+			trainingFile = "trainingData/census.train.short";
+			testFile = "trainingData/census.test.short";
+		}
 		BayesClassifier hw = new BayesClassifier("trainingData/census.names");
 		/*
 		System.out.println(outZero +" "+ outOne);
@@ -208,9 +218,9 @@ public class BayesClassifier extends Classifier{
 		}
 		System.out.println();
 		*/
-		hw.train("trainingData/census.train.short");
+		hw.train(trainingFile);
 
-		hw.makePredictions("trainingData/census.test.short");
+		hw.makePredictions(testFile);
 		
 
 			
