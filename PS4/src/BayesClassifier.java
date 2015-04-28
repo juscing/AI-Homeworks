@@ -51,8 +51,49 @@ public class BayesClassifier extends Classifier{
 
 	@Override
 	public void makePredictions(String testDataFilepath) {
-		// TODO Auto-generated method stub
-
+		// System.out.println("going to open file:");
+		Scanner scanr = null;
+		try {
+			File name = new File(testDataFilepath);
+			scanr = new Scanner(name);
+		} 
+		catch (FileNotFoundException e) {
+			System.out.println("Sorry, that file can not be found.");
+			System.exit(1);
+		}
+		
+		String[] split;
+		String line;
+		
+		//read in the rest of census.train
+		System.out.println("going to read file:");
+		while (scanr.hasNext()) {
+			line = scanr.nextLine();
+			if (line.length() != 0) {
+				split = line.split("\\s+");
+				int[] data = new int[setUp.size() - 1];
+				for(int i = 0; i < data.length; i++) {
+					// Lets find out if this is numeric
+					try {
+						data[i] = Integer.parseInt(split[i]);
+					}catch(NumberFormatException e) {
+						// its non-numeric
+						int pos = this.setUp.get(i).indexOf(split[i]);
+						if(pos != -1) {
+							data[i] = pos;
+						} else {
+							System.out.println("There was an error finding the category.");
+						}
+					}
+				}
+				if(root.classify(data)) {
+					System.out.println(outOne);
+				} else {
+					System.out.println(outZero);
+				}
+			}
+		}
+		scanr.close();
 	}
 	
 //----------------------------------------------------------------------------------------------------
