@@ -1,9 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.Class;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 
@@ -51,7 +48,7 @@ public class BayesClassifier extends Classifier{
 		} 
 		catch (FileNotFoundException e) {
 			System.out.println("Sorry, that file can not be found. Exiting.");
-			System.exit(0);
+			System.exit(1);
 		}
 		
 		String[] split;
@@ -106,7 +103,7 @@ public class BayesClassifier extends Classifier{
 		String line;
 		
 		//read in the rest of census.train
-		System.out.println("going to read file:");
+		//System.out.println("going to read file:");
 		while (scanr.hasNext()) {
 			line = scanr.nextLine();
 			if (line.length() != 0) {
@@ -138,7 +135,7 @@ public class BayesClassifier extends Classifier{
 	
 //----------------------------------------------------------------------------------------------------
 	
-	public boolean readNames(String names){
+	public void readNames(String names){
 		//This is to read in census.names and set up our table that will store the data
 		//  from census.train
 		//System.out.println("going to read file:");
@@ -148,8 +145,8 @@ public class BayesClassifier extends Classifier{
 			scanr = new Scanner(name);
 		} 
 		catch (FileNotFoundException e) {
-			System.out.println("Sorry, that file can not be found.");
-			return false;
+			System.out.println("Sorry, that file can not be found. Exiting.");
+			System.exit(1);
 		}
 		String[] split;
 		//setUp = new ArrayList<ArrayList<String>>();
@@ -183,41 +180,8 @@ public class BayesClassifier extends Classifier{
 		}
 		
 		scanr.close();
-		return true;
 	}
-/*
-	public boolean readData(String data){
-		System.out.println("going to open file:");
-		Scanner scanr = null;
-		try {
-			File name = new File(data);
-			scanr = new Scanner(name);
-		} 
-		catch (FileNotFoundException e) {
-			System.out.println("Sorry, that file can not be found.");
-			return false;
-		}
-		
-		
-		//System.out.println(lineData.length);
-		
-		String[] split;
-		String line;
-		
-		//read in the rest of census.train
-		System.out.println("going to read file:");
-		while (scanr.hasNext()) {
-			line = scanr.nextLine();
-			if (line.length() != 0) {
-				split = line.split("\\s+");				
-				census.add(split);
-			}
-			
-		}
-		scanr.close();
-		return true;
-	}
-	*/
+
 	
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
@@ -236,17 +200,8 @@ public class BayesClassifier extends Classifier{
 		System.out.println();
 		
 		hw.train("trainingData/census.train.short");
-		System.out.println("read in data");
-		/*
-		for(int i = 0; i<3; i++){
-			String[] printArray = census.get(i);
-			//System.out.println(i);
-			for(int j = 0; j<setUp.size()+1; j++){
-				System.out.print(printArray[j] + " ");
-			}
-			System.out.print("\n");
-		}
-		*/
+		hw.makePredictions("trainingData/census.train2.short");
+		
 			
 	}
 
