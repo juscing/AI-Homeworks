@@ -168,7 +168,7 @@ public class CoinFlip extends Classifier{
 		
 		System.out.println(outZero +" "+ outOne);
 		System.out.println();
-		
+		System.out.println(setUp.size());
 		for(int i = 0; i<setUp.size(); i++){
 			for(int j = 0; j<setUp.get(i).size(); j++){
 				System.out.print(setUp.get(i).get(j) + " ");

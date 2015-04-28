@@ -23,12 +23,23 @@ public class BayesClassifier extends Classifier{
 	
 	public BayesClassifier(String namesFilepath) {
 		super(namesFilepath);
-		//get the census.names file read in and stored in an arraylist of arraylist's
-		//  each line gets its own array list
+		//census.names read into an arraylist of arryalist's
+		//each line in census.names get its own arraylist
 		readNames(namesFilepath);
-		//set up the stuff for 'train' to store the census.train data in
-		//have an array list for each individual with an array of size the number of categories 
-		//  in names
+		//use census.names data to create the bayesian network
+		Root root = new Root(setUp.size());
+		for(int i = 0; i<setUp.size(); i++){
+			//get desired row from setUp
+			ArrayList<String> row = setUp.get(i);
+			if(row.get(1).equals("numeric")){
+				root.addNode(i, 0);
+			}
+			else{
+				int x = row.size()-1;
+				root.addNode(i, x);
+			}
+		}
+
 		
 	}
 
