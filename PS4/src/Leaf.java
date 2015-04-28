@@ -21,14 +21,14 @@ public class Leaf implements LeafNode {
 		} else {
 			this.rawData[0][data]++;
 		}
-		//System.out.println("RAW DATA "+this.rawData[0][data] +" "+this.rawData[1][data]);
+		System.out.println("RAW DATA "+this.rawData[0][data] +" "+this.rawData[1][data]);
 		// calculate probabilities
 		for(int i = 0; i < p.length; i++) {
 			for(int j = 0; j < p[i].length; j++) {
 				if(i == 0) {
 					if(this.parent.getNumFalse() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumFalse();
-						System.out.println(this.p[i][j]);
+						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");
 						this.p[i][j] = 0;
@@ -36,7 +36,7 @@ public class Leaf implements LeafNode {
 				} else {
 					if(this.parent.getNumTrue() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumTrue();
-						System.out.println(this.p[i][j]);
+						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");
 						this.p[i][j] = 0;

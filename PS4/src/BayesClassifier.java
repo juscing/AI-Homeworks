@@ -58,9 +58,9 @@ public class BayesClassifier extends Classifier{
 		while (scanr.hasNext()) {
 			line = scanr.nextLine();
 			split = line.split("\\s+");
-			
+			root.incrementTotaldata();
 			if(split[setUp.size()].equals(">50K"))
-				root.increment();
+				root.incrementNumTrue();
 			
 			for(int i=0; i<setUp.size(); i++){
 				//get this lines classification

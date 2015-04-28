@@ -53,7 +53,7 @@ public class Root {
 		}
 		// Update the leaf
 		this.children[column].addTrainingData(data, classification);
-
+		System.out.println("Total True: "+this.totalTrue+" Total Data: "+this.totalData);
 		this.p[1] = ((double) this.totalTrue / this.totalData);
 		this.p[0] = 1 - p[1];
 		return true;
