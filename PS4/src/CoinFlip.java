@@ -48,7 +48,7 @@ public class CoinFlip extends Classifier{
 		} 
 		catch (FileNotFoundException e) {
 			System.out.println("Sorry, that file can not be found. Exiting");
-			System.exit(0);
+			System.exit(1);
 		}
 		
 		String line;
@@ -166,16 +166,16 @@ public class CoinFlip extends Classifier{
 		
 		CoinFlip hw = new CoinFlip("trainingData/census.names");
 		
-		System.out.println(outZero +" "+ outOne);
-		System.out.println();
-		System.out.println(setUp.size());
+		//System.out.println(outZero +" "+ outOne);
+		//System.out.println();
+		//System.out.println(setUp.size());
 		for(int i = 0; i<setUp.size(); i++){
 			for(int j = 0; j<setUp.get(i).size(); j++){
-				System.out.print(setUp.get(i).get(j) + " ");
+				//System.out.print(setUp.get(i).get(j) + " ");
 			}
-			System.out.print("\n");
+			//System.out.print("\n");
 		}
-		System.out.println();
+		//System.out.println();
 		
 		hw.train("trainingData/census.train.short");
 		//System.out.println("read in data");
@@ -184,13 +184,13 @@ public class CoinFlip extends Classifier{
 			String[] printArray = census.get(i);
 			//System.out.println(i);
 			for(int j = 0; j<setUp.size()+1; j++){
-				System.out.print(printArray[j] + " ");
+				// System.out.print(printArray[j] + " ");
 			}
-			System.out.print("\n");
+			// System.out.print("\n");
 		}
 		
-		System.out.println("PREDICTIONS:");
-		hw.makePredictions("trainingData/census.train.short");
+		// System.out.println("PREDICTIONS:");
+		hw.makePredictions("trainingData/census.test.short");
 		
 	}
 

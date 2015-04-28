@@ -9,7 +9,7 @@ if [ -z "$2" ]
         echo "Failed to enter testing file"
         exit
 fi
-awk '{print $NF}' trainingData/census.train > TEMPCOMPARE1.txt
+awk '{print $NF}' $1 > TEMPCOMPARE1.txt
 n=`wc -l TEMPCOMPARE1.txt | awk '{print $1;}'`
 java -cp ./bin BayesClassifier $1 $2 > TEMPCOMPARE2.txt
 diff=`sdiff -B -b -s TEMPCOMPARE1.txt TEMPCOMPARE2.txt | wc -l`
