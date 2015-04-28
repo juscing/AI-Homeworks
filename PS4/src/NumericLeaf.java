@@ -11,6 +11,7 @@ public class NumericLeaf implements LeafNode {
 	Root parent;
 	
 	public NumericLeaf(int length, Root parent) {
+		//length is the number of categories in the header
 		this.meanTrue = 0;
 		this.meanFalse = 0;
 		this.stderrTrue = 0;
