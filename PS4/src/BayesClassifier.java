@@ -32,7 +32,7 @@ public class BayesClassifier extends Classifier{
 				root.addNode(i, 0);
 			}
 			else{
-				int x = row.size();
+				int x = row.size() - 1;
 				root.addNode(i, x);
 			}
 		}
@@ -53,7 +53,6 @@ public class BayesClassifier extends Classifier{
 		
 		String[] split;
 		String line;
-		setUp.size();
 		//read in the rest of census.train
 		//System.out.println("going to read file:");
 		while (scanr.hasNext()) {
@@ -80,12 +79,12 @@ public class BayesClassifier extends Classifier{
 					itemNum = setUp.get(i).indexOf(split[i]) - 1;
 				}
 				
-				System.out.print(itemNum + " ");
+				// System.out.print(itemNum + " ");
 				if (i == setUp.size()-1)
-					System.out.print(classification);
+					// System.out.print(classification);
 				root.addTrainingData(i, itemNum, classification);
 			}
-			System.out.print("\n");
+			//System.out.print("\n");
 		}
 		scanr.close();
 
@@ -120,7 +119,7 @@ public class BayesClassifier extends Classifier{
 						data[i] = Integer.parseInt(split[i]);
 					}catch(NumberFormatException e) {
 						// its non-numeric
-						int pos = this.setUp.get(i).indexOf(split[i]);
+						int pos = this.setUp.get(i).indexOf(split[i]) - 1;
 						if(pos != -1) {
 							data[i] = pos;
 						} else {
@@ -128,7 +127,10 @@ public class BayesClassifier extends Classifier{
 						}
 					}
 				}
-				
+				for(int i : data) {
+					//System.out.print(i + " ");
+				}
+				//System.out.println();
 				if(root.classify(data)) {
 					System.out.println(outOne);
 				} else {

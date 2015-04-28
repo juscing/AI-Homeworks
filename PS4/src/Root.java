@@ -60,12 +60,12 @@ public class Root {
 		int trueP = 1;
 		int falseP = 1;
 		for(int i=0; i < this.children.length; i++) {
-			System.out.println("child: " + this.children[i]);
+			//System.out.println("child: " + this.children[i]);
 			//System.out.println("data: " + data[i]);
 			double tval = this.children[i].calculateProbGivenTrue(data[i]);
 			double fval = this.children[i].calculateProbGivenFalse(data[i]);
-			System.out.println("True " + tval);
-			System.out.println("False " + fval);
+			//System.out.println("True " + tval);
+			//System.out.println("False " + fval);
 			if(tval > 0) {
 				trueP *= tval;
 			}

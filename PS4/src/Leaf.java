@@ -25,15 +25,17 @@ public class Leaf implements LeafNode {
 				if(i == 0) {
 					if(this.parent.getNumFalse() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumFalse();
+						System.out.println(this.p[i][j]);
 					} else {
-						System.out.println("ZERO");
+						// System.out.println("ZERO");
 						this.p[i][j] = 0;
 					}
 				} else {
 					if(this.parent.getNumTrue() > 0) {
 						this.p[i][j] = this.rawData[i][j] / this.parent.getNumTrue();
+						System.out.println(this.p[i][j]);
 					} else {
-						System.out.println("ZERO");
+						// System.out.println("ZERO");
 						this.p[i][j] = 0;
 					}
 				}
@@ -44,11 +46,13 @@ public class Leaf implements LeafNode {
 	
 	@Override
 	public double calculateProbGivenTrue(int val) {
+		System.out.println(this.p[1][val]);
 		return this.p[1][val];
 	}
 	
 	@Override
 	public double calculateProbGivenFalse(int val) {
+		System.out.println(this.p[0][val]);
 		return this.p[0][val];
 	}
 }
