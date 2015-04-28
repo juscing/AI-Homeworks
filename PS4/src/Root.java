@@ -34,7 +34,7 @@ public class Root {
 	}
 	
 	public boolean addTrainingData(int column, int data, boolean classification) {
-		if(!valid) {
+		if(!valid) { //valid is set to false in initializer
 			for(LeafNode node : this.children) {
 				if(node == null) {
 					// You didn't set up all the nodes properly before doing this
@@ -50,6 +50,7 @@ public class Root {
 		// Recalculate the probabilities
 		if(classification) {
 			this.totalTrue++;
+			System.out.println("Num >50K "+this.totalTrue++);
 		}
 		this.p[1] = ((double) this.totalTrue / this.totalData);
 		this.p[0] = 1 - p[1];

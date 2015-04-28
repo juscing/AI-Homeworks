@@ -58,6 +58,10 @@ public class BayesClassifier extends Classifier{
 		while (scanr.hasNext()) {
 			line = scanr.nextLine();
 			split = line.split("\\s+");
+			
+			if(split[setUp.size()].equals(">50K"))
+				root.increment();
+			
 			for(int i=0; i<setUp.size(); i++){
 				//get this lines classification
 				boolean classification;
@@ -84,6 +88,7 @@ public class BayesClassifier extends Classifier{
 					//System.out.print(classification);
 
 				root.addTrainingData(i, itemNum, classification);
+				//i is the column, itemNum is the data value, classification is >/=<50K
 			}
 			//System.out.print("\n");
 		}
