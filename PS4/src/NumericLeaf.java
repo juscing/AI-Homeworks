@@ -49,7 +49,7 @@ public class NumericLeaf implements LeafNode {
 			for(int number : this.truedata) {
 				runningTotal += (number - this.meanTrue) * (number - this.meanTrue);
 			}
-			this.stderrFalse = runningTotal / this.truedata.size();
+			this.stderrTrue = runningTotal / this.truedata.size();
 		} else {
 			double runningTotal = 0;
 			for(int number : this.falsedata) {
