@@ -156,8 +156,8 @@ public class CoinFlip extends Classifier{
 	}
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
-		String trainingFile = "trainingData/census.half2.train";
-		String testFile = "trainingData/census.half.test";
+		String trainingFile = "trainingData/census.first1000.train";
+		String testFile = "trainingData/census.last500.test";
 		/*
 		if(args.length > 1) {
 			trainingFile = args[0];

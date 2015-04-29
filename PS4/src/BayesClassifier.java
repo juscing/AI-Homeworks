@@ -192,8 +192,8 @@ public class BayesClassifier extends Classifier{
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
 		
-		String trainingFile = "trainingData/census.half.train";
-		String testFile = "trainingData/census.half2.test";
+		String trainingFile = "trainingData/census.first1000.train";
+		String testFile = "trainingData/census.last500.test";
 		/*
 		if(args.length > 1) {
 			trainingFile = args[0];
