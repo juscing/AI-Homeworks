@@ -1,10 +1,10 @@
 
-public class CategoryLeaf extends LeafNode {
+public class SmoothCategoryLeaf extends SmoothLeafNode {
 
 	private double[][] p;
 	private int[][] rawData;
 	
-	public CategoryLeaf(String name, int length, Root parent) {
+	public SmoothCategoryLeaf(String name, int length, SmoothRoot parent) {
 		super(name, parent);
 		//length is the number of categories in that header (column)
 		this.p = new double[2][length];
@@ -43,7 +43,7 @@ public class CategoryLeaf extends LeafNode {
 			for(int j = 0; j < p[i].length; j++) {
 				if(i == 0) {
 					if(this.parent.getNumFalse() > 0) {
-						this.p[i][j] = ((double) this.rawData[i][j]) / this.parent.getNumFalse();
+						this.p[i][j] = ((double) this.rawData[i][j] + 1) / (this.parent.getNumFalse() + (1*this.p[0].length));
 						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");
@@ -51,7 +51,7 @@ public class CategoryLeaf extends LeafNode {
 					}
 				} else {
 					if(this.parent.getNumTrue() > 0) {
-						this.p[i][j] = ((double) this.rawData[i][j]) / this.parent.getNumTrue();
+						this.p[i][j] = ((double) this.rawData[i][j] + 1) / (this.parent.getNumTrue() + (1*this.p[0].length));
 						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");

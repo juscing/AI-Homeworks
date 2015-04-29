@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 
-public class NumericLeaf extends LeafNode {
+public class SmoothNumericLeaf extends SmoothLeafNode {
 	private double meanTrue;
 	private double meanFalse;
 	private double stderrTrue;
@@ -9,7 +9,7 @@ public class NumericLeaf extends LeafNode {
 	private ArrayList<Integer> truedata;
 	private ArrayList<Integer> falsedata;
 	
-	public NumericLeaf(String name, int length, Root parent) {
+	public SmoothNumericLeaf(String name, int length, SmoothRoot parent) {
 		super(name, parent);
 		this.meanTrue = 0;
 		this.meanFalse = 0;

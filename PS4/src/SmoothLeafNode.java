@@ -1,10 +1,10 @@
 
-public abstract class LeafNode {
+public abstract class SmoothLeafNode {
 	
 	private String name;
-	protected Root parent;
+	protected SmoothRoot parent;
 	
-	public LeafNode(String categoryName, Root parent) {
+	public SmoothLeafNode(String categoryName, SmoothRoot parent) {
 		this.name = categoryName;
 		this.parent = parent;
 	}
