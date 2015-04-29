@@ -160,8 +160,8 @@ public class BayesClassifier extends Classifier{
 		//place in variable names
 		line = scanr.nextLine();
 		split = line.split("\\s+");
-		outZero = split[0];
-		outOne = split[1];
+		outZero = split[1];
+		outOne = split[0];
 		//read in the rest of census.names
 		
 		while (scanr.hasNext()) {
@@ -192,9 +192,9 @@ public class BayesClassifier extends Classifier{
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
 		
-		String trainingFile;
-		String testFile;
-		
+		String trainingFile = "trainingData/census.half.train";
+		String testFile = "trainingData/census.half2.test";
+		/*
 		if(args.length > 1) {
 			trainingFile = args[0];
 			testFile = args[1];
@@ -202,6 +202,7 @@ public class BayesClassifier extends Classifier{
 			trainingFile = "trainingData/census.train.short";
 			testFile = "trainingData/census.test.short";
 		}
+		*/
 		BayesClassifier hw = new BayesClassifier("trainingData/census.names");
 
 		hw.train(trainingFile);

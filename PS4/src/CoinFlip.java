@@ -80,8 +80,8 @@ public class CoinFlip extends Classifier{
 		//place in variable names
 		line = scanr.nextLine();
 		split = line.split("\\s+");
-		outZero = split[0];
-		outOne = split[1];
+		outZero = split[1];
+		outOne = split[0];
 		//read in the rest of census.names
 		
 		while (scanr.hasNext()) {
@@ -156,9 +156,9 @@ public class CoinFlip extends Classifier{
 	}
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
-		String trainingFile = "";
-		String testFile = "";
-		
+		String trainingFile = "trainingData/census.half2.train";
+		String testFile = "trainingData/census.half.test";
+		/*
 		if(args.length > 1) {
 			trainingFile = args[0];
 			testFile = args[1];
@@ -166,6 +166,7 @@ public class CoinFlip extends Classifier{
 			System.out.println("Please provide input files");
 			System.exit(1);
 		}
+		*/
 		CoinFlip hw = new CoinFlip("trainingData/census.names");
 		
 		//System.out.println(outZero +" "+ outOne);
