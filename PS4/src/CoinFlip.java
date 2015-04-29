@@ -1,18 +1,13 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.lang.Class;
-import java.sql.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
 
 public class CoinFlip extends Classifier{
 
-	//the two options we are trying to categorize
-	//the first item in census.names is outZero, the second is outOne, corresponding to the 
-	//  decision functions output of either 0 or 1 
+	//the two classification options
 	static String outZero;
 	static String outOne;
 	//reads in the outline for the data from census.names
@@ -27,14 +22,12 @@ public class CoinFlip extends Classifier{
 		//get the census.names file read in and stored in an arraylist of arraylist's
 		//  each line gets its own array list
 		readNames(namesFilepath);
-		//set up the stuff for 'train' to store the census.train data in
-		//have an array list for each individual with an array of size the number of categories 
-		//  in names
 		
 	}
 
 	@Override
 	public void train(String trainingDataFilepath) {
+		//puts all of the data into the arraylist census
 		readData(trainingDataFilepath);
 
 	}
