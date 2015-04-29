@@ -43,7 +43,7 @@ public class SmoothCategoryLeaf extends SmoothLeafNode {
 			for(int j = 0; j < p[i].length; j++) {
 				if(i == 0) {
 					if(this.parent.getNumFalse() > 0) {
-						this.p[i][j] = ((double) this.rawData[i][j] + 1) / (this.parent.getNumFalse() + (1*this.p[0].length));
+						this.p[i][j] = ((double) this.rawData[i][j] + 0.5) / (this.parent.getNumFalse() + (0.5*this.p[0].length));
 						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");
@@ -51,7 +51,7 @@ public class SmoothCategoryLeaf extends SmoothLeafNode {
 					}
 				} else {
 					if(this.parent.getNumTrue() > 0) {
-						this.p[i][j] = ((double) this.rawData[i][j] + 1) / (this.parent.getNumTrue() + (1*this.p[0].length));
+						this.p[i][j] = ((double) this.rawData[i][j] + 0.5) / (this.parent.getNumTrue() + (0.5*this.p[0].length));
 						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");

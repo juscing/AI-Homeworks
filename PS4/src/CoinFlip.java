@@ -156,7 +156,16 @@ public class CoinFlip extends Classifier{
 	}
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
+		String trainingFile = "";
+		String testFile = "";
 		
+		if(args.length > 1) {
+			trainingFile = args[0];
+			testFile = args[1];
+		} else {
+			System.out.println("Please provide input files");
+			System.exit(1);
+		}
 		CoinFlip hw = new CoinFlip("trainingData/census.names");
 		
 		//System.out.println(outZero +" "+ outOne);
@@ -170,7 +179,7 @@ public class CoinFlip extends Classifier{
 		}
 		//System.out.println();
 		
-		hw.train("trainingData/census.train.short");
+		hw.train(trainingFile);
 		//System.out.println("read in data");
 		
 		for(int i = 0; i<3; i++){
@@ -183,7 +192,7 @@ public class CoinFlip extends Classifier{
 		}
 		
 		// System.out.println("PREDICTIONS:");
-		hw.makePredictions("trainingData/census.test.short");
+		hw.makePredictions(testFile);
 		
 	}
 

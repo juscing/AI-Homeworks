@@ -192,15 +192,15 @@ public class SmoothingBayesClassifier extends Classifier{
 //----------------------------------------------------------------------------------------------------
 	public static void main(String[] args){
 		
-		String trainingFile;
-		String testFile;
+		String trainingFile = "";
+		String testFile = "";
 		
 		if(args.length > 1) {
 			trainingFile = args[0];
 			testFile = args[1];
 		} else {
-			trainingFile = "trainingData/census.train.short";
-			testFile = "trainingData/census.test.short";
+			System.out.println("Please provide input files");
+			System.exit(1);
 		}
 		SmoothingBayesClassifier hw = new SmoothingBayesClassifier("trainingData/census.names");
 

@@ -15,7 +15,7 @@ if [ -z "$3" ]
         exit
 fi
 n=`wc -l $3 | awk '{print $1;}'`
-java -cp ./bin BayesClassifier $1 $2 > TEMPCOMPARE.txt
+java -cp ./bin CoinFlip $1 $2 > TEMPCOMPARE.txt
 diff=`diff -U 0 $3 TEMPCOMPARE.txt | grep -v ^@ | wc -l`
 #diff=`sdiff -B -b -s $3 TEMPCOMPARE.txt | wc -l`
 rm TEMPCOMPARE.txt
