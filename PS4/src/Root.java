@@ -63,12 +63,8 @@ public class Root {
 			double fval = this.children.get(i).calculateProbGivenFalse(data[i]);
 			//System.out.println("True " + tval);
 			//System.out.println("False " + fval);
-			if(tval > 0) {
-				trueP *= tval;
-			}
-			if(fval > 0) {
-				falseP *= fval;
-			}
+			trueP *= tval;
+			falseP *= fval;
 		}
 		trueP *= this.p[1];
 		falseP *= this.p[0];
