@@ -1,6 +1,8 @@
 
 public class SmoothCategoryLeaf extends SmoothLeafNode {
 
+	public static double L = 0.5;
+	
 	private double[][] p;
 	private int[][] rawData;
 	
@@ -43,7 +45,7 @@ public class SmoothCategoryLeaf extends SmoothLeafNode {
 			for(int j = 0; j < p[i].length; j++) {
 				if(i == 0) {
 					if(this.parent.getNumFalse() > 0) {
-						this.p[i][j] = ((double) this.rawData[i][j] + 0.5) / (this.parent.getNumFalse() + (0.5*this.p[0].length));
+						this.p[i][j] = ((double) this.rawData[i][j] + L) / (this.parent.getNumFalse() + (L*this.p[0].length));
 						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");
@@ -51,7 +53,7 @@ public class SmoothCategoryLeaf extends SmoothLeafNode {
 					}
 				} else {
 					if(this.parent.getNumTrue() > 0) {
-						this.p[i][j] = ((double) this.rawData[i][j] + 0.5) / (this.parent.getNumTrue() + (0.5*this.p[0].length));
+						this.p[i][j] = ((double) this.rawData[i][j] + L) / (this.parent.getNumTrue() + (L*this.p[0].length));
 						//System.out.println(this.p[i][j]);
 					} else {
 						// System.out.println("ZERO");
